@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>AMAR INCOME</title>
+    <title>💰 AMAR INCOME 💰</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -83,7 +83,7 @@
         .cv-channel-text strong { display:block; font-size:0.9rem; font-weight:800; color:var(--text); }
         .cv-channel-text span { font-size:0.75rem; color:var(--text2); }
         .cv-join-btn { background:var(--gradient-main); color:#fff; border:none; padding:9px 18px; border-radius:12px; font-size:0.82rem; font-weight:800; cursor:pointer; box-shadow:0 4px 14px rgba(108,99,255,0.3); }
-        .cv-join-btn.joined { background:#64748b; box-shadow:none; }
+        .cv-join-btn.joined { background:#64748b; box-shadow:none; cursor:default; }
         .cv-how-box { background:rgba(108,99,255,0.05); border:1.5px solid rgba(108,99,255,0.15); border-radius:20px; padding:20px; width:100%; text-align:left; margin-top:15px; margin-bottom:28px; }
         .cv-how-title { font-size:0.88rem; font-weight:800; color:var(--primary); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
         .cv-timeline { display:flex; flex-direction:column; gap:16px; position:relative; padding-left:15px; }
@@ -443,6 +443,21 @@
         }
         .file-upload-area:hover { border-color: var(--primary); background: rgba(108,99,255,0.05); }
         .file-upload-area .file-name { font-size: 0.75rem; color: var(--text2); margin-top: 4px; }
+
+        /* ─── রিয়েলটাইম আপডেট ইন্ডিকেটর ─── */
+        .live-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #00c26f;
+            border-radius: 50%;
+            animation: pulse-dot 1.5s ease-in-out infinite;
+            margin-right: 6px;
+        }
+        @keyframes pulse-dot {
+            0%,100% { opacity:1; transform:scale(1); }
+            50% { opacity:0.5; transform:scale(0.8); }
+        }
     </style>
 </head>
 <body>
@@ -455,7 +470,7 @@
 <!-- লোডার -->
 <div id="loader">
     <div class="loader-icon">💰</div>
-    <div class="loader-title">AMAR INCONE</div>
+    <div class="loader-title">AMAR -INCOME</div>
     <div class="loader-sub">Loading your workspace...</div>
     <div class="progress-bar"><div class="progress-fill" id="pf"></div></div>
 </div>
@@ -860,6 +875,7 @@
     let selMth = '';
     let curSlide = 0, slTimer = null;
     let adConfig = { watched: 0, limit: 20, reward: 0.50 };
+    let channelCheckInterval = null;
 
     // ─── টুলস ───
     const setP = p => document.getElementById('pf').style.width = p + '%';
@@ -918,7 +934,6 @@
             if (refUser) {
                 const newRefs = parseInt(refUser.referrals || 0) + 1;
                 await db.ref('users/' + refUserId).update({ referrals: newRefs });
-                // রেফার বোনাস
                 const bonus = parseFloat(configData.referralBonus || 5);
                 const newBalance = parseFloat(refUser.balance || 0) + bonus;
                 await db.ref('users/' + refUserId).update({ balance: newBalance });
@@ -958,7 +973,7 @@
     }
 
     function updateRef() {
-        const bot = configData.botUsername || 'AMAR INCOMEBot';
+        const bot = configData.botUsername || 'amarincom_bot';
         const lnk = 'https://t.me/' + bot + '?startapp=' + userId;
         const el = document.getElementById('rfl');
         if (el) el.value = lnk;
@@ -1047,7 +1062,7 @@
         } catch(e) { console.error('Team load error:', e); }
     }
 
-    // ─── মাইক্রো জবস (সহ স্ক্রিনশট) ───
+    // ─── মাইক্রো জবস ───
     async function loadMicroJobs() {
         const c = document.getElementById('mjc');
         if (!c) return;
@@ -1112,7 +1127,6 @@
         if (card) card.classList.toggle('open');
     };
 
-    // ─── ওপেন এমজে (স্ক্রিনশট সহ) ───
     window.openMJ = (id, title, desc, link, reward) => {
         showP(`
         <div style="padding:20px;">
@@ -1145,7 +1159,6 @@
         }
     };
 
-    // ─── সাবমিট এমজে (স্ক্রিনশট সহ) ───
     window.submitMJ = async (jid, jtitle, reward) => {
         const proof = document.getElementById('mpt')?.value;
         const fileInput = document.getElementById('proof_file');
@@ -1164,7 +1177,6 @@
                 submittedAt: Date.now()
             };
             
-            // স্ক্রিনশট ফাইল থাকলে Base64 এ কনভার্ট করে সংরক্ষণ
             if (fileInput && fileInput.files && fileInput.files[0]) {
                 const reader = new FileReader();
                 const fileData = await new Promise((resolve) => {
@@ -1400,7 +1412,7 @@
         } catch(e) { console.error('Ad stats error:', e); }
     }
 
-    // ─── এড ভিডিও ট্রিগার ───
+    // ─── এড ভিডিও ───
     window.triggerAdVideo = () => {
         if (adConfig.watched >= adConfig.limit) {
             tg.showAlert('আজকের এড দেখার লিমিট শেষ হয়েছে! আগামীকাল আবার চেষ্টা করুন।');
@@ -1694,34 +1706,35 @@
         else window.open(shareUrl, '_blank');
     };
 
-    // ─── ভেরিফিকেশন (রিয়েল চেক) ───
+    // ─── চ্যানেল ভেরিফিকেশন ───
     async function checkChannelMembership() {
         try {
-            const config = await db.ref('config/requiredChannels').once('value');
-            const channels = config.val() || {};
+            const channels = configData.requiredChannels || {};
             let joinedCount = 0;
             let bothJoined = true;
             
-            // চ্যানেল ১ চেক
             if (channels.channel1Url) {
-                // সিমুলেটেড চেক - আসলে টেলিগ্রাম API দিয়ে চেক করতে হবে
-                // এখানে আমরা ইউজারের চ্যানেল জয়েন স্টেটাস ডাটাবেজে সংরক্ষণ করব
                 const statusSnap = await db.ref('channel_joins/' + userId + '/channel1').once('value');
                 const joined = statusSnap.val() === true;
                 if (joined) joinedCount++;
                 bothJoined = bothJoined && joined;
-                document.getElementById('cv-join-1').textContent = joined ? '✓ JOINED' : 'JOIN';
-                document.getElementById('cv-join-1').className = 'cv-join-btn' + (joined ? ' joined' : '');
+                const btn = document.getElementById('cv-join-1');
+                if (btn) {
+                    btn.textContent = joined ? '✓ JOINED' : 'JOIN';
+                    btn.className = 'cv-join-btn' + (joined ? ' joined' : '');
+                }
             }
             
-            // চ্যানেল ২ চেক
             if (channels.channel2Url) {
                 const statusSnap = await db.ref('channel_joins/' + userId + '/channel2').once('value');
                 const joined = statusSnap.val() === true;
                 if (joined) joinedCount++;
                 bothJoined = bothJoined && joined;
-                document.getElementById('cv-join-2').textContent = joined ? '✓ JOINED' : 'JOIN';
-                document.getElementById('cv-join-2').className = 'cv-join-btn' + (joined ? ' joined' : '');
+                const btn = document.getElementById('cv-join-2');
+                if (btn) {
+                    btn.textContent = joined ? '✓ JOINED' : 'JOIN';
+                    btn.className = 'cv-join-btn' + (joined ? ' joined' : '');
+                }
             }
             
             document.getElementById('joined-count').textContent = joinedCount + ' / 2 joined';
@@ -1737,7 +1750,6 @@
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> যাচাই করা হচ্ছে...';
         
-        // রিয়েল চেক
         const allJoined = await checkChannelMembership();
         
         btn.disabled = false;
@@ -1746,7 +1758,8 @@
         if (allJoined) {
             document.getElementById('cvs').style.display = 'none';
             document.getElementById('app').style.display = 'block';
-            if (configData.welcomeMessage) {
+            if (configData.welcomeMessage && !localStorage.getItem('welcomed_' + userId)) {
+                localStorage.setItem('welcomed_' + userId, '1');
                 showP(`<div class="ppb"><div class="pph"><span class="ppt atl">স্বাগতম!</span><button class="ppc" onclick="closePopup()">×</button></div><p class="pps atl" style="font-size:1.05rem">${configData.welcomeMessage}</p><button class="ppa" onclick="closePopup()">চালিয়ে যান</button></div>`);
             }
         } else {
@@ -1758,7 +1771,6 @@
     document.querySelectorAll('.cv-join-btn').forEach((btn, index) => {
         btn.addEventListener('click', function(e) {
             const channel = index === 0 ? 'channel1' : 'channel2';
-            // ইউজার জয়েন করার পর ট্র্যাক
             setTimeout(() => {
                 db.ref('channel_joins/' + userId + '/' + channel).set(true);
                 checkChannelMembership();
@@ -1766,11 +1778,56 @@
         });
     });
 
+    // ─── রিয়েলটাইম চ্যানেল চেক ───
+    function startChannelCheck() {
+        if (channelCheckInterval) clearInterval(channelCheckInterval);
+        channelCheckInterval = setInterval(() => {
+            if (document.getElementById('cvs').style.display !== 'none') {
+                checkChannelMembership();
+            }
+        }, 5000);
+    }
+
+    // ─── কনফিগ চেঞ্জ লিসেনার ───
+    function listenConfigChanges() {
+        db.ref('config').on('value', async (snap) => {
+            const newConfig = snap.val();
+            if (newConfig) {
+                const oldChannels = configData.requiredChannels || {};
+                const newChannels = newConfig.requiredChannels || {};
+                
+                // চ্যানেল পরিবর্তন হলে রিফ্রেশ
+                if (oldChannels.channel1Url !== newChannels.channel1Url || 
+                    oldChannels.channel2Url !== newChannels.channel2Url) {
+                    configData = newConfig;
+                    // চ্যানেল জয়েন স্ট্যাটাস রিসেট
+                    await db.ref('channel_joins/' + userId).remove();
+                    await checkChannelMembership();
+                    showToast('কনফিগ পরিবর্তন হয়েছে! পুনরায় ভেরিফাই করুন।');
+                    // ভেরিফিকেশন পেজ দেখান
+                    document.getElementById('app').style.display = 'none';
+                    document.getElementById('cvs').style.display = 'flex';
+                } else {
+                    configData = newConfig;
+                }
+                
+                // ব্যানার আপডেট
+                initBanners();
+                // এড লিমিট আপডেট
+                loadAdStats();
+                // রেফারেল বোনাস আপডেট
+                document.getElementById('rba').textContent = parseFloat(configData.referralBonus || 5).toFixed(2);
+                // উইথড্র মেথড আপডেট
+                renderWDMethods();
+            }
+        });
+    }
+
     // ─── লিফ ───
     function createLeafParticle() {
         const leaf = document.createElement('div');
         leaf.className = 'leaf-particle';
-        const leafTypes = ['🍃', '🌿', '🌱', '💎'];
+        const leafTypes = ['🤑', '💸', '💐', '💎'];
         leaf.textContent = leafTypes[Math.floor(Math.random() * leafTypes.length)];
         leaf.style.left = Math.random() * 100 + 'vw';
         const size = 0.7 + Math.random() * 0.7;
@@ -1788,16 +1845,14 @@
         tg.expand();
         setP(10);
         
-        // স্টার্ট প্যারামিটার থেকে রেফারেল আইডি নিন
         const startParam = tg?.initDataUnsafe?.start_param;
         const refId = startParam && startParam !== userId ? startParam : null;
         
         await loadUserData();
-        setP(40);
+        setP(30);
         await loadConfigData();
-        setP(60);
+        setP(50);
 
-        // নতুন ইউজার
         if (!userData.telegram_id) {
             userData.telegram_id = userId;
             userData.first_name = tgUser.first_name || 'User';
@@ -1808,7 +1863,6 @@
             userData.referrals = 0;
             userData.joinedAt = Date.now();
             
-            // রেফারেল সংরক্ষণ
             if (refId) {
                 userData.referredBy = refId;
                 await handleReferral(refId);
@@ -1816,15 +1870,14 @@
             
             await saveUserData(userData);
         } else if (refId && !userData.referredBy) {
-            // পুরানো ইউজার কিন্তু রেফারেল নেই
             userData.referredBy = refId;
             await saveUserData({ referredBy: refId });
             await handleReferral(refId);
         }
 
-        setP(80);
+        setP(70);
         
-        // চ্যানেল চেক
+        // চ্যানেল সেটআপ
         const channels = configData.requiredChannels || {};
         if (channels.channel1Url && channels.channel1Url.trim() !== '') {
             document.getElementById('cvb1').href = channels.channel1Url;
@@ -1835,9 +1888,8 @@
             if (channels.channel2Name) document.getElementById('cvn2').textContent = channels.channel2Name;
         }
 
-        // ভেরিফিকেশন চেক
         const isVerified = await checkChannelMembership();
-        setP(100);
+        setP(90);
         document.getElementById('loader').style.display = 'none';
 
         if (isVerified) {
@@ -1852,12 +1904,14 @@
             document.getElementById('app').style.display = 'none';
         }
 
+        setP(100);
         updateUI();
         initBanners();
         renderWDMethods();
+        startChannelCheck();
+        listenConfigChanges();
     }
 
-    // ─── স্টার্ট ───
     initApp();
 </script>
 </body>
