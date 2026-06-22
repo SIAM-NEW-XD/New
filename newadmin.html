@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>⚡ TaskEarn Admin ⚡</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    
+    <style>
+        :root {
+            --primary: #6C63FF;
+            --primary-dark: #5A52D5;
+            --primary-light: #8B85FF;
+            --gradient-main: linear-gradient(135deg, #6C63FF 0%, #3F3D9E 100%);
+            --gradient-accent: linear-gradient(135deg, #FF6584 0%, #FF2D55 100%);
+            --bg: #f5f7ff;
+            --card-bg: rgba(255,255,255,0.95);
+            --card-border: rgba(108,99,255,0.10);
+            --card-shadow: 0 4px 24px rgba(108,99,255,0.08);
+            --text: #1a1a2e;
+            --text2: #6b6b8a;
+            --white: #ffffff;
+            --radius: 20px;
+            --radius-sm: 14px;
+            --green: #00c26f;
+            --pink: #FF6584;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Plus Jakarta Sans','Hind Siliguri',sans-serif; -webkit-tap-highlight-color:transparent; }
+        body { background: var(--bg); color: var(--text); overflow-x: hidden; min-height: 100vh; padding-bottom: 20px; }
+        
+        /* ─── লোডার ─── */
+        #loader { position:fixed; top:0; left:0; width:100%; height:100%; background:linear-gradient(160deg,#f5f7ff 0%,#eef0fa 50%,#f5f7ff 100%); z-index:15000; display:flex; flex-direction:column; justify-content:center; align-items:center; }
+        .loader-icon { width:88px; height:88px; border-radius:28px; background:var(--gradient-main); color:#fff; display:flex; justify-content:center; align-items:center; font-size:2.8rem; margin-bottom:22px; box-shadow:0 16px 40px rgba(108,99,255,0.35); animation: logoPulse 2s ease-in-out infinite; }
+        @keyframes logoPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+        .loader-title { font-size:1.7rem; font-weight:800; background:var(--gradient-main); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        .loader-sub { font-size:0.9rem; color:var(--text2); margin-bottom:28px; font-weight:500; }
+        .progress-bar { width:180px; height:5px; background:rgba(108,99,255,0.15); border-radius:10px; overflow:hidden; }
+        .progress-fill { height:100%; width:0%; background:var(--gradient-main); transition:width .1s; border-radius:10px; }
+
+        /* ─── অ্যাডমিন হেডার ─── */
+        .admin-header {
+            background: var(--gradient-main);
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(108,99,255,0.25);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .admin-header h1 { font-size: 1.2rem; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+        .admin-header .badge { background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 0.65rem; font-weight: 700; }
+
+        /* ─── কন্টেইনার ─── */
+        .container { max-width: 800px; margin: 0 auto; padding: 16px; }
+
+        /* ─── সেকশন কার্ড ─── */
+        .section-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            box-shadow: var(--card-shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .section-title {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid rgba(108,99,255,0.08);
+        }
+        .section-title i { color: var(--primary); }
+
+        /* ─── গ্রিড ─── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .stat-box {
+            background: var(--bg);
+            border-radius: var(--radius-sm);
+            padding: 14px 12px;
+            text-align: center;
+            border: 1px solid rgba(108,99,255,0.06);
+        }
+        .stat-box .num { font-size: 1.5rem; font-weight: 800; color: var(--primary); }
+        .stat-box .label { font-size: 0.65rem; color: var(--text2); text-transform: uppercase; font-weight: 700; margin-top: 4px; }
+
+        /* ─── ফর্ম এলিমেন্ট ─── */
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-weight: 700; font-size: 0.75rem; color: var(--text2); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.4px; }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 1.5px solid rgba(108,99,255,0.12);
+            background: #fafffe;
+            outline: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text);
+            font-family: inherit;
+            transition: border 0.2s;
+        }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            border-color: var(--primary);
+            background: #fff;
+        }
+        .form-group textarea { min-height: 60px; resize: vertical; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn:active { transform: scale(0.97); }
+        .btn-primary { background: var(--gradient-main); color: #fff; box-shadow: 0 4px 12px rgba(108,99,255,0.25); }
+        .btn-danger { background: var(--gradient-accent); color: #fff; box-shadow: 0 4px 12px rgba(255,45,120,0.25); }
+        .btn-outline { background: transparent; border: 1.5px solid var(--primary); color: var(--primary); }
+        .btn-sm { padding: 6px 14px; font-size: 0.75rem; }
+        .btn-block { width: 100%; justify-content: center; }
+
+        /* ─── টেবিল / লিস্ট ─── */
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 14px;
+            border-bottom: 1px solid rgba(108,99,255,0.06);
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .list-item:last-child { border-bottom: none; }
+        .list-item .info { flex: 1; min-width: 120px; }
+        .list-item .info strong { display: block; font-size: 0.85rem; color: var(--text); }
+        .list-item .info span { font-size: 0.72rem; color: var(--text2); }
+        .list-item .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+
+        .status-badge {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 700;
+        }
+        .status-pending { background: #fef3c7; color: #d97706; }
+        .status-approved { background: #d1fae5; color: #059669; }
+        .status-rejected { background: #fde8e8; color: #dc2626; }
+
+        /* ─── ট্যাব ─── */
+        .tabs {
+            display: flex;
+            gap: 6px;
+            background: var(--bg);
+            border-radius: var(--radius-sm);
+            padding: 4px;
+            margin-bottom: 18px;
+            overflow-x: auto;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 10px 12px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.78rem;
+            color: var(--text2);
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .tab-btn.active {
+            background: var(--gradient-main);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(108,99,255,0.2);
+        }
+
+        /* ─── টোস্ট ─── */
+        .toast-notif {
+            position: fixed;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--gradient-main);
+            color: #fff;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.82rem;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 8px 32px rgba(108,99,255,0.35);
+            z-index: 200000;
+            transition: top 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+            white-space: nowrap;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        .toast-notif.show { display: flex; top: 20px; }
+
+        /* ─── পপআপ ─── */
+        .po {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26,26,46,0.7);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 200000;
+            padding: 16px;
+        }
+        .pc2 {
+            background: #fff;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 380px;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+            animation: psi 0.3s ease;
+        }
+        @keyframes psi { from { transform:scale(0.9); opacity:0; } to { transform:scale(1); opacity:1; } }
+        .ppb { padding: 20px 18px; text-align: center; }
+        .pph { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid rgba(108,99,255,0.1); padding-bottom: 10px; }
+        .ppt { font-size: 1rem; font-weight: 800; color: var(--text); }
+        .ppc { background: none; border: none; font-size: 1.2rem; color: var(--text2); cursor: pointer; padding: 0; }
+        .ppi { font-size: 2.5rem; margin: 12px 0; display: inline-block; }
+        .ppb2 { font-size: 1.1rem; font-weight: 800; margin-bottom: 6px; color: var(--text); }
+        .pps { font-size: 0.85rem; color: #666; line-height: 1.5; margin-bottom: 16px; }
+        .ppa { width: 100%; padding: 12px; border: none; border-radius: 50px; background: var(--gradient-main); color: #fff; font-weight: 700; font-size: 0.9rem; cursor: pointer; }
+
+        /* ─── রেসপন্সিভ ─── */
+        @media (max-width: 480px) {
+            .form-row { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .admin-header h1 { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- টোস্ট -->
+<div class="toast-notif" id="toast-bar">
+    <i class="fas fa-circle-check"></i> <span id="toast-msg">সফল!</span>
+</div>
+
+<!-- লোডার -->
+<div id="loader">
+    <div class="loader-icon">⚡</div>
+    <div class="loader-title">TaskEarn Admin</div>
+    <div class="loader-sub">Loading dashboard...</div>
+    <div class="progress-bar"><div class="progress-fill" id="pf"></div></div>
+</div>
+
+<!-- পপআপ -->
+<div id="popup" class="po"><div class="pc2"><div id="pb"></div></div></div>
+
+<!-- অ্যাডমিন হেডার -->
+<header class="admin-header">
+    <h1><i class="fas fa-crown"></i> Admin Panel</h1>
+    <span class="badge"><i class="fas fa-user-shield"></i> Super Admin</span>
+</header>
+
+<div class="container">
+
+    <!-- পরিসংখ্যান -->
+    <div class="section-card">
+        <div class="section-title"><i class="fas fa-chart-pie"></i> সার্বিক পরিসংখ্যান</div>
+        <div class="stats-grid" id="stats-grid">
+            <div class="stat-box"><div class="num" id="stat-users">0</div><div class="label">মোট ইউজার</div></div>
+            <div class="stat-box"><div class="num" id="stat-balance">৳0</div><div class="label">মোট ব্যালেন্স</div></div>
+            <div class="stat-box"><div class="num" id="stat-tasks">0</div><div class="label">মোট টাস্ক</div></div>
+            <div class="stat-box"><div class="num" id="stat-withdrawals">0</div><div class="label">পেন্ডিং উইথড্র</div></div>
+        </div>
+    </div>
+
+    <!-- ট্যাব -->
+    <div class="tabs" id="tab-container">
+        <button class="tab-btn active" data-tab="users">👥 ইউজার</button>
+        <button class="tab-btn" data-tab="tasks">📋 টাস্ক</button>
+        <button class="tab-btn" data-tab="withdrawals">💸 উইথড্র</button>
+        <button class="tab-btn" data-tab="settings">⚙️ সেটিংস</button>
+    </div>
+
+    <!-- ইউজার ট্যাব -->
+    <div id="tab-users" class="tab-content">
+        <div class="section-card">
+            <div class="section-title"><i class="fas fa-users"></i> সকল ইউজার</div>
+            <div id="users-list"><p style="text-align:center;color:var(--text2);padding:20px;">লোড হচ্ছে...</p></div>
+        </div>
+    </div>
+
+    <!-- টাস্ক ট্যাব -->
+    <div id="tab-tasks" class="tab-content" style="display:none;">
+        <div class="section-card">
+            <div class="section-title"><i class="fas fa-plus-circle"></i> নতুন মাইক্রো জব যোগ করুন</div>
+            <form id="add-task-form">
+                <div class="form-group">
+                    <label>টাস্কের শিরোনাম</label>
+                    <input type="text" id="task-title" placeholder="যেমন: টেলিগ্রাম জয়েন করুন" required>
+                </div>
+                <div class="form-group">
+                    <label>বিবরণ (নিয়মাবলী)</label>
+                    <textarea id="task-desc" placeholder="কাজ করার বিস্তারিত নির্দেশনা দিন" rows="3" required></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>লিংক</label>
+                        <input type="url" id="task-link" placeholder="https://t.me/..." required>
+                    </div>
+                    <div class="form-group">
+                        <label>রিওয়ার্ড (৳)</label>
+                        <input type="number" id="task-reward" placeholder="10" step="0.01" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>ছবির URL (ঐচ্ছিক)</label>
+                    <input type="url" id="task-image" placeholder="https://example.com/image.jpg">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-save"></i> টাস্ক যোগ করুন</button>
+            </form>
+        </div>
+
+        <div class="section-card">
+            <div class="section-title"><i class="fas fa-list"></i> সব মাইক্রো জব</div>
+            <div id="tasks-list"><p style="text-align:center;color:var(--text2);padding:20px;">লোড হচ্ছে...</p></div>
+        </div>
+    </div>
+
+    <!-- উইথড্র ট্যাব -->
+    <div id="tab-withdrawals" class="tab-content" style="display:none;">
+        <div class="section-card">
+            <div class="section-title"><i class="fas fa-clock"></i> পেন্ডিং উইথড্র অনুরোধ</div>
+            <div id="withdrawals-list"><p style="text-align:center;color:var(--text2);padding:20px;">লোড হচ্ছে...</p></div>
+        </div>
+    </div>
+
+    <!-- সেটিংস ট্যাব -->
+    <div id="tab-settings" class="tab-content" style="display:none;">
+        <div class="section-card">
+            <div class="section-title"><i class="fas fa-sliders-h"></i> কনফিগারেশন</div>
+            <form id="settings-form">
+                <div class="form-group">
+                    <label>বট ইউজারনেম</label>
+                    <input type="text" id="cfg-bot" placeholder="@TaskEarnBot">
+                </div>
+                <div class="form-group">
+                    <label>রেফারেল বোনাস (৳)</label>
+                    <input type="number" id="cfg-ref-bonus" step="0.01" placeholder="5">
+                </div>
+                <div class="form-group">
+                    <label>স্বাগতম বার্তা</label>
+                    <textarea id="cfg-welcome" rows="2" placeholder="আপনার স্বাগতম বার্তা"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>চ্যানেল ১ URL</label>
+                        <input type="url" id="cfg-chan1" placeholder="https://t.me/...">
+                    </div>
+                    <div class="form-group">
+                        <label>চ্যানেল ২ URL</label>
+                        <input type="url" id="cfg-chan2" placeholder="https://t.me/...">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>ব্যানার URL (এক লাইনে একটি, কমা বা নিউলাইন দিয়ে আলাদা)</label>
+                    <textarea id="cfg-banners" rows="2" placeholder="https://example.com/banner1.jpg, https://example.com/banner2.jpg"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>উইথড্র পদ্ধতি (JSON)</label>
+                    <textarea id="cfg-methods" rows="3" placeholder='[{"name":"bKash","min_amount":50,"charge_percent":5}]'></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-save"></i> সেটিংস সংরক্ষণ করুন</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ─── FIREBASE ───
+    const firebaseConfig = {
+        apiKey: "AIzaSyC9LnWZ75opeSGZwHONaHlSLsDXqppn0P8",
+        authDomain: "amartask-caf53.firebaseapp.com",
+        databaseURL: "https://amartask-caf53-default-rtdb.firebaseio.com",
+        projectId: "amartask-caf53",
+        storageBucket: "amartask-caf53.firebasestorage.app",
+        messagingSenderId: "726098934888",
+        appId: "1:726098934888:web:8a2a905e4b4b8e88224fdd"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // ─── টুলস ───
+    const setP = p => document.getElementById('pf').style.width = p + '%';
+    function showToast(msg) {
+        const toast = document.getElementById('toast-bar');
+        document.getElementById('toast-msg').textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+    function showPopup(html) {
+        document.getElementById('pb').innerHTML = html;
+        document.getElementById('popup').style.display = 'flex';
+    }
+    function closePopup() {
+        document.getElementById('popup').style.display = 'none';
+    }
+    window.closePopup = closePopup;
+
+    // ─── ট্যাব ───
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            const tab = this.dataset.tab;
+            document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+            document.getElementById('tab-' + tab).style.display = 'block';
+            // লোড ডেটা
+            if (tab === 'users') loadUsers();
+            if (tab === 'tasks') loadTasks();
+            if (tab === 'withdrawals') loadWithdrawals();
+            if (tab === 'settings') loadSettings();
+        });
+    });
+
+    // ─── স্ট্যাটস ───
+    async function loadStats() {
+        try {
+            const usersSnap = await db.ref('users').once('value');
+            let totalUsers = 0, totalBalance = 0;
+            usersSnap.forEach(child => { totalUsers++; totalBalance += parseFloat(child.val().balance || 0); });
+            document.getElementById('stat-users').textContent = totalUsers;
+            document.getElementById('stat-balance').textContent = '৳' + totalBalance.toFixed(2);
+
+            const tasksSnap = await db.ref('micro_jobs').once('value');
+            let totalTasks = 0;
+            tasksSnap.forEach(() => totalTasks++);
+            document.getElementById('stat-tasks').textContent = totalTasks;
+
+            const wdSnap = await db.ref('withdrawals').once('value');
+            let pending = 0;
+            wdSnap.forEach(child => {
+                const val = child.val();
+                if (val.status === 'pending') pending++;
+            });
+            document.getElementById('stat-withdrawals').textContent = pending;
+        } catch(e) { console.error('Stats error:', e); }
+    }
+
+    // ─── ইউজার ───
+    async function loadUsers() {
+        const container = document.getElementById('users-list');
+        container.innerHTML = '<p style="text-align:center;color:var(--text2);padding:20px;">লোড হচ্ছে...</p>';
+        try {
+            const snap = await db.ref('users').once('value');
+            const users = [];
+            snap.forEach(child => { users.push({ id: child.key, ...child.val() }); });
+            if (!users.length) {
+                container.innerHTML = '<p style="text-align:center;color:var(--text2);padding:20px;">কোনো ইউজার নেই</p>';
+                return;
+            }
+            container.innerHTML = users.map(u => `
+                <div class="list-item">
+                    <div class="info">
+                        <strong>${u.first_name || 'User'} ${u.last_name || ''}</strong>
+                        <span>UID: ${u.telegram_id || u.id} • ব্যালেন্স: ৳${parseFloat(u.balance || 0).toFixed(2)} • রেফারেল: ${u.referrals || 0}</span>
+                    </div>
+                    <div class="actions">
+                        <button class="btn btn-sm btn-outline" onclick="editUser('${u.id}')"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteUser('${u.id}')"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        } catch(e) {
+            container.innerHTML = '<p style="text-align:center;color:var(--text2);padding:20px;">লোড করতে সমস্যা</p>';
+        }
+    }
+
+    window.editUser = (uid) => {
+        showPopup(`
+            <div style="padding:20px;">
+                <div class="pph"><span class="ppt">✏️ ইউজার এডিট</span><button class="ppc" onclick="closePopup()">×</button></div>
+                <div class="form-group">
+                    <label>ব্যালেন্স (৳)</label>
+                    <input type="number" id="edit-balance" step="0.01" placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label>রেফারেল সংখ্যা</label>
+                    <input type="number" id="edit-refs" placeholder="0">
+                </div>
+                <button class="btn btn-primary btn-block" onclick="saveUserEdit('${uid}')"><i class="fas fa-save"></i> সংরক্ষণ করুন</button>
+            </div>
+        `);
+        // লোড ডেটা
+        db.ref('users/' + uid).once('value').then(snap => {
+            const data = snap.val();
+            if (data) {
+                document.getElementById('edit-balance').value = data.balance || 0;
+                document.getElementById('edit-refs').value = data.referrals || 0;
+            }
+        });
+    };
+
+    window.saveUserEdit = async (uid) => {
+        const balance = parseFloat(document.getElementById('edit-balance').value) || 0;
+        const referrals = parseInt(document.getElementById('edit-refs').value) || 0;
+        try {
+            await db.ref('users/' + uid).update({ balance, referrals });
+            closePopup();
+            showToast('ইউজার আপডেট হয়েছে!');
+            loadUsers();
+            loadStats();
+        } catch(e) {
+            showToast('আপডেট করতে সমস্যা!');
+        }
+    };
+
+    window.deleteUser = (uid) => {
+        if (!confirm('এই ইউজার ডিলিট করতে চান? এটা স্থায়ীভাবে মুছে যাবে!')) return;
+        db.ref('users/' + uid).remove().then(() => {
+            showToast('ইউজার ডিলিট হয়েছে!');
+            loadUsers();
+            loadStats();
+        }).catch(() => showToast('ডিলিট করতে সমস্যা!'));
+    };
+
+    // ─── টাস্ক ───
+    async function loadTasks() {
+        const container = document.getElementById('tasks-list');
+        container.innerHTML = '<p style="text-align:center;color:var(--text2);padding:20px;">লোড হচ্ছে...</p>';
+        try {
+            const snap = await db.ref('micro_jobs').once('value');
+            const tasks = [];
+            snap.forEach(child => { tasks.push({ id: child.key, ...child.val() }); });
+            if (!tasks.length) {
+                container.innerHTML = '<p style="text-align:center;color:var(--text2);padding:20px;">কোনো টাস্ক নেই</p>';
+                return;
+            }
+            container.innerHTML = tasks.map(t => `
+                <div class="list-item">
+                    <div class="info">
+                        <strong>${t.title}</strong>
+                        <span>রিওয়ার্ড: ৳${parseFloat(t.reward).toFixed(2)} • লিংক: ${t.link}</span>
+                    </div>
+                    <div class="actions">
+                        <button class="btn btn-sm btn-danger" onclick="deleteTask('${t.id}')"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        } catch(e) {
+            container.innerHTML = '<p style="text-align:center;color:var(--text2);padding:20px;">লোড করতে সমস্যা</p>';
+        }
+    }
+
+    document.getElementById('add-task-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const title = document.getElementById('task-title').value.trim();
+        const desc = document.getElementById('task-desc').value.trim();
+        const link = document.getElementById('task-link').value.trim();
+        const reward = parseFloat(document.getElementById('task-reward').value) || 0;
+        const image = document.getElementById('task-image').value.trim();
+        if (!title || !desc || !link || !reward) {
+            showToast('সব ফিল্ড পূরণ করুন!');
+            return;
+        }
+        try {
+            const newRef = db.ref('micro_jobs').push();
+            await newRef.set({ title, description: desc, link, reward, image_url: image, createdAt: Date.now() });
+            document.getElementById('add-task-form').reset();
+            showToast('টাস্ক যোগ হয়েছে!');
+            loadTasks();
+            loadStats();
+        } catch(e) {
+            showToast('টাস্ক যোগ করতে সমস্যা!');
+        }
+    });
+
+    window.deleteTask = (id) => {
+        if (!confirm('টাস্ক ডিলিট করতে চান?')) return;
+        db.ref('micro_jobs/' + id).remove().then(() => {
+            showToast('টাস্ক ডিলিট হয়েছে!');
+            loadTasks();
+            loadStats();
+        }).catch(() => showToast('ডিলিট করতে সমস্যা!'));
+    };
+
+    // ─── উইথড্র ───
+    async function loadWithdrawals() {
+        const container = document.getElementById('withdrawals-list');
+        container.innerHTML = '<p style="text-align:center;color:var(--text2);padding:20px;">লোড হচ্ছে...</p>';
+        try {
+            const snap = await db.ref('withdrawals').once('value');
+            const wds = [];
+            snap.forEach(child => {
+                const val = child.val();
+                wds.push({ id: child.key, userId: Object.keys(child.val())[0], ...val });
+            });
+            // ফ্ল্যাটেন
+            const flat = [];
+            snap.forEach(uidSnap => {
+                uidSnap.forEach(wdSnap => {
+                    const wd = wdSnap.val();
+                    flat.push({ id: wdSnap.key, userId: uidSnap.key, ...wd });
+                });
+            });
+            const pending = flat.filter(w => w.status === 'pending');
+            if (!pending.length) {
+                container.innerHTML = '<p style="text-align:center;color:var(--text2);padding:20px;">কোনো পেন্ডিং উইথড্র নেই</p>';
+                return;
+            }
+            container.innerHTML = pending.map(w => `
+                <div class="list-item">
+                    <div class="info">
+                        <strong>৳${parseFloat(w.amount).toFixed(2)}</strong>
+                        <span>${w.method || ''} • ${w.account || ''} • ইউজার: ${w.userId}</span>
+                    </div>
+                    <div class="actions">
+                        <button class="btn btn-sm btn-primary" onclick="approveWithdraw('${w.userId}','${w.id}')"><i class="fas fa-check"></i> Approve</button>
+                        <button class="btn btn-sm btn-danger" onclick="rejectWithdraw('${w.userId}','${w.id}')"><i class="fas fa-times"></i> Reject</button>
+                    </div>
+                </div>
+            `).join('');
+        } catch(e) {
+            container.innerHTML = '<p style="text-align:center;color:var(--text2);padding:20px;">লোড করতে সমস্যা</p>';
+        }
+    }
+
+    window.approveWithdraw = async (userId, wdId) => {
+        if (!confirm('উইথড্র অনুমোদন করতে চান?')) return;
+        try {
+            await db.ref('withdrawals/' + userId + '/' + wdId).update({ status: 'completed' });
+            showToast('উইথড্র অনুমোদিত হয়েছে!');
+            loadWithdrawals();
+            loadStats();
+        } catch(e) {
+            showToast('অনুমোদন করতে সমস্যা!');
+        }
+    };
+
+    window.rejectWithdraw = async (userId, wdId) => {
+        if (!confirm('উইথড্র বাতিল করতে চান? টাকা ফেরত দেওয়া হবে।')) return;
+        try {
+            // টাকা ফেরত
+            const wdSnap = await db.ref('withdrawals/' + userId + '/' + wdId).once('value');
+            const wd = wdSnap.val();
+            if (wd) {
+                const userSnap = await db.ref('users/' + userId).once('value');
+                const user = userSnap.val();
+                if (user) {
+                    const newBalance = parseFloat(user.balance || 0) + parseFloat(wd.amount || 0);
+                    await db.ref('users/' + userId).update({ balance: newBalance });
+                }
+            }
+            await db.ref('withdrawals/' + userId + '/' + wdId).update({ status: 'rejected' });
+            showToast('উইথড্র বাতিল করা হয়েছে!');
+            loadWithdrawals();
+            loadStats();
+        } catch(e) {
+            showToast('বাতিল করতে সমস্যা!');
+        }
+    };
+
+    // ─── সেটিংস ───
+    async function loadSettings() {
+        try {
+            const snap = await db.ref('config').once('value');
+            const cfg = snap.val() || {};
+            document.getElementById('cfg-bot').value = cfg.botUsername || '';
+            document.getElementById('cfg-ref-bonus').value = cfg.referralBonus || 5;
+            document.getElementById('cfg-welcome').value = cfg.welcomeMessage || '';
+            document.getElementById('cfg-chan1').value = cfg.requiredChannels?.channel1Url || '';
+            document.getElementById('cfg-chan2').value = cfg.requiredChannels?.channel2Url || '';
+            document.getElementById('cfg-banners').value = (cfg.banners || []).join(', ');
+            document.getElementById('cfg-methods').value = JSON.stringify(cfg.withdrawMethods || [{name:'bKash',min_amount:50,charge_percent:5}], null, 2);
+        } catch(e) {
+            console.error('Settings load error:', e);
+        }
+    }
+
+    document.getElementById('settings-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        try {
+            const banners = document.getElementById('cfg-banners').value.split(',').map(s => s.trim()).filter(Boolean);
+            let methods;
+            try {
+                methods = JSON.parse(document.getElementById('cfg-methods').value);
+            } catch(e) {
+                showToast('JSON ফরম্যাট ভুল!');
+                return;
+            }
+            const data = {
+                botUsername: document.getElementById('cfg-bot').value.trim(),
+                referralBonus: parseFloat(document.getElementById('cfg-ref-bonus').value) || 5,
+                welcomeMessage: document.getElementById('cfg-welcome').value.trim(),
+                requiredChannels: {
+                    channel1Url: document.getElementById('cfg-chan1').value.trim(),
+                    channel2Url: document.getElementById('cfg-chan2').value.trim()
+                },
+                banners: banners,
+                withdrawMethods: methods
+            };
+            await db.ref('config').update(data);
+            showToast('সেটিংস সংরক্ষিত হয়েছে!');
+            loadStats();
+        } catch(e) {
+            showToast('সেটিংস সংরক্ষণ করতে সমস্যা!');
+        }
+    });
+
+    // ─── ইনিশিয়ালাইজ ───
+    async function initAdmin() {
+        setP(10);
+        await loadStats();
+        setP(40);
+        await loadUsers();
+        setP(70);
+        await loadTasks();
+        await loadWithdrawals();
+        setP(90);
+        await loadSettings();
+        setP(100);
+        document.getElementById('loader').style.display = 'none';
+    }
+
+    initAdmin();
+</script>
+</body>
+</html>
