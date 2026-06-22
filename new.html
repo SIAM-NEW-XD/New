@@ -3,18 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>💰 TaskEarn 💰</title>
+    <title>AMAR INCOME</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+    <script src='//libtl.com/sdk.js' data-zone='11187400' data-sdk='show_11187400'></script>
     
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     
     <style>
-        /* ─── নতুন কালার প্যালেট ─── */
+        /* ─── কালার প্যালেট ─── */
         :root { 
             --primary: #6C63FF; 
             --primary-dark: #5A52D5; 
@@ -47,7 +48,11 @@
         .progress-bar { width:180px; height:5px; background:rgba(108,99,255,0.15); border-radius:10px; overflow:hidden; }
         .progress-fill { height:100%; width:0%; background:var(--gradient-main); transition:width .1s; border-radius:10px; }
 
-        /* ─── ভেরিফিকেশন পেজ ─── */
+        /* ─── টোস্ট ─── */
+        .toast-notif { position:fixed; top:-100px; left:50%; transform:translateX(-50%); background:var(--gradient-main); color:#fff; padding:10px 24px; border-radius:50px; font-weight:700; font-size:0.82rem; display:none; align-items:center; gap:8px; box-shadow:0 8px 32px rgba(108,99,255,0.35); z-index:200000; transition:top 0.4s cubic-bezier(0.175,0.885,0.32,1.275); white-space:nowrap; border:1px solid rgba(255,255,255,0.3); }
+        .toast-notif.show { display:flex; top:20px; }
+
+        /* ─── ভেরিফিকেশন ─── */
         #cvs { position:fixed; top:0; left:0; width:100%; height:100%; background:linear-gradient(160deg,#f5f7ff,#eef0fa); z-index:14000; display:none; flex-direction:column; overflow-y:auto; }
         .cv-header { display:flex; justify-content:space-between; align-items:center; padding:16px 20px; background:rgba(255,255,255,0.8); backdrop-filter:blur(10px); border-bottom:1px solid var(--card-border); }
         .cv-logo { display:flex; align-items:center; gap:10px; font-size:1.2rem; font-weight:800; color:var(--primary); }
@@ -78,6 +83,7 @@
         .cv-channel-text strong { display:block; font-size:0.9rem; font-weight:800; color:var(--text); }
         .cv-channel-text span { font-size:0.75rem; color:var(--text2); }
         .cv-join-btn { background:var(--gradient-main); color:#fff; border:none; padding:9px 18px; border-radius:12px; font-size:0.82rem; font-weight:800; cursor:pointer; box-shadow:0 4px 14px rgba(108,99,255,0.3); }
+        .cv-join-btn.joined { background:#64748b; box-shadow:none; }
         .cv-how-box { background:rgba(108,99,255,0.05); border:1.5px solid rgba(108,99,255,0.15); border-radius:20px; padding:20px; width:100%; text-align:left; margin-top:15px; margin-bottom:28px; }
         .cv-how-title { font-size:0.88rem; font-weight:800; color:var(--primary); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
         .cv-timeline { display:flex; flex-direction:column; gap:16px; position:relative; padding-left:15px; }
@@ -87,11 +93,8 @@
         .cv-step-text strong { display:block; font-size:0.82rem; font-weight:800; margin-bottom:2px; }
         .cv-step-text p { font-size:0.75rem; color:var(--text2); line-height:1.4; margin-bottom:0; }
         .cv-verify-btn { width:100%; max-width:420px; padding:16px; border:none; border-radius:50px; background:var(--gradient-main); color:#fff; font-size:1rem; font-weight:800; cursor:pointer; box-shadow:0 8px 24px rgba(108,99,255,0.35); display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:16px; letter-spacing:0.3px; }
+        .cv-verify-btn:disabled { opacity:0.6; cursor:not-allowed; }
         .cv-footer-caption { font-size:0.72rem; color:var(--text2); font-weight:600; }
-
-        /* ─── টোস্ট নোটিফিকেশন ─── */
-        .toast-notif { position:fixed; top:-100px; left:50%; transform:translateX(-50%); background:var(--gradient-main); color:#fff; padding:10px 24px; border-radius:50px; font-weight:700; font-size:0.82rem; display:none; align-items:center; gap:8px; box-shadow:0 8px 32px rgba(108,99,255,0.35); z-index:200000; transition:top 0.4s cubic-bezier(0.175,0.885,0.32,1.275); white-space:nowrap; border:1px solid rgba(255,255,255,0.3); }
-        .toast-notif.show { display:flex; top:20px; }
 
         /* ─── পপআপ ─── */
         .po { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(26,26,46,0.7); backdrop-filter:blur(8px); display:none; justify-content:center; align-items:center; z-index:200000; padding:16px; }
@@ -161,7 +164,7 @@
         .banner-dot { width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,0.5); cursor:pointer; }
         .banner-dot.active { background:#fff; width:14px; border-radius:3px; }
 
-        /* ─── ইনভাইট কার্ড ─── */
+        /* ─── ইনভাইট ─── */
         .invite-card { background:var(--card-bg); backdrop-filter:blur(12px); border-radius:24px; border:1px solid var(--card-border); padding:22px 20px; box-shadow:var(--card-shadow); text-align:center; }
         .invite-card h4 { font-size:0.95rem; font-weight:700; color:var(--text); line-height:1.6; margin-bottom:16px; }
         .invite-link-dashed { border:2px dashed rgba(108,99,255,0.3); background:rgba(108,99,255,0.04); color:var(--primary); border-radius:14px; padding:12px 10px; font-size:0.8rem; font-weight:700; word-break:break-all; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
@@ -184,12 +187,11 @@
         .member-referrer span { display:block; font-size:0.62rem; color:var(--text2); font-weight:700; text-transform:uppercase; }
         .member-referrer strong { display:block; font-size:0.78rem; font-weight:800; color:var(--primary); }
 
-        /* ─── টাস্ক ব্যানার ─── */
+        /* ─── টাস্ক ─── */
         .task-banner { background:var(--gradient-main); padding:18px 16px; border-radius:20px; color:#fff; margin-bottom:16px; box-shadow:0 4px 16px rgba(108,99,255,0.25); position:relative; overflow:hidden; }
         .task-banner h2 { font-size:1.2rem; font-weight:800; position:relative; z-index:1; }
         .task-banner p { font-size:0.75rem; opacity:0.9; font-weight:500; margin-top:2px; position:relative; z-index:1; }
 
-        /* ─── টাস্ক অ্যাকর্ডিয়ন ─── */
         .task-card-accordion { background:#ffffff; border:1.2px solid rgba(108,99,255,0.07); border-radius:16px; margin-bottom:11px; box-shadow:0 4px 15px rgba(108,99,255,0.04); overflow:hidden; transition:all 0.22s ease; }
         .task-header { padding:10px 14px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#fff; gap:8px; }
         .task-header:active { background:#f8f7ff; }
@@ -213,27 +215,114 @@
         .task-btn-outline { background:#fff; border:1.5px solid rgba(108,99,255,0.15); color:var(--primary); padding:9px; border-radius:10px; font-size:0.78rem; font-weight:700; cursor:pointer; text-align:center; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:4px; }
         .task-btn-solid { background:var(--gradient-main); border:none; color:#fff; padding:9px; border-radius:10px; font-size:0.78rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:4px; box-shadow:0 2px 8px rgba(108,99,255,0.25); }
 
-        /* ─── লিডারবোর্ড পডিয়াম ─── */
-        @keyframes floatEffect { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
-        .podium-container { display:flex; align-items:flex-end; justify-content:center; gap:10px; margin:25px 0 15px; padding-top:25px; }
-        .podium-column { background:var(--card-bg); border:1.5px solid var(--card-border); border-radius:100px; padding:20px 8px; text-align:center; flex:1; min-width:90px; max-width:110px; box-shadow:var(--card-shadow); position:relative; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; }
-        .podium-column.first { border:2px solid #f1c40f; height:215px; background:linear-gradient(180deg,#fffdf0,#ffffff); animation:floatEffect 3.2s ease-in-out infinite; }
-        .podium-column.second { height:185px; animation:floatEffect 3.2s ease-in-out infinite; animation-delay:0.5s; }
-        .podium-column.third { height:175px; animation:floatEffect 3.2s ease-in-out infinite; animation-delay:1.1s; }
-        .podium-avatar-wrap { position:relative; margin-bottom:8px; }
-        .podium-avatar { width:56px; height:56px; border-radius:50%; object-fit:cover; border:3px solid #ddd; }
-        .first .podium-avatar { width:66px; height:66px; border-color:#f1c40f; box-shadow:0 4px 12px rgba(241,196,15,0.25); }
-        .second .podium-avatar { border-color:#bdc3c7; }
-        .third .podium-avatar { border-color:#e67e22; }
-        .podium-crown { position:absolute; top:-16px; left:50%; transform:translateX(-50%); font-size:1.4rem; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
-        .podium-badge { position:absolute; bottom:-6px; left:50%; transform:translateX(-50%); font-size:0.62rem; font-weight:800; padding:3px 12px; border-radius:20px; text-transform:uppercase; box-shadow:0 2px 6px rgba(0,0,0,0.1); }
-        .first .podium-badge { background:#f1c40f; color:#fff; }
-        .second .podium-badge { background:#bdc3c7; color:#fff; }
-        .third .podium-badge { background:#e67e22; color:#fff; }
+        /* ─── অ্যাডভান্সড লিডারবোর্ড ─── */
+        @keyframes floatGlow {
+            0%,100% { transform:translateY(0) scale(1); filter:drop-shadow(0 8px 20px rgba(108,99,255,0.2)); }
+            50% { transform:translateY(-10px) scale(1.02); filter:drop-shadow(0 12px 30px rgba(108,99,255,0.35)); }
+        }
+        @keyframes crownSpin {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(10deg) scale(1.1); }
+            100% { transform: rotate(0deg) scale(1); }
+        }
+        @keyframes podiumGlow {
+            0%,100% { box-shadow: 0 0 20px rgba(241,196,15,0.3); }
+            50% { box-shadow: 0 0 40px rgba(241,196,15,0.6), 0 0 60px rgba(241,196,15,0.2); }
+        }
+        .podium-container { 
+            display: flex; 
+            align-items: flex-end; 
+            justify-content: center; 
+            gap: 10px; 
+            margin: 25px 0 15px; 
+            padding: 20px 10px;
+            background: linear-gradient(180deg, rgba(108,99,255,0.03) 0%, transparent 100%);
+            border-radius: 30px;
+        }
+        .podium-column { 
+            background: var(--card-bg); 
+            border: 1.5px solid var(--card-border); 
+            border-radius: 100px 100px 20px 20px; 
+            padding: 20px 8px 15px; 
+            text-align: center; 
+            flex: 1; 
+            min-width: 80px;
+            max-width: 110px; 
+            box-shadow: var(--card-shadow); 
+            position: relative; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: flex-start;
+            transition: all 0.3s ease;
+        }
+        .podium-column:hover { transform: translateY(-5px) scale(1.02); }
+        .podium-column.first { 
+            border: 2px solid #f1c40f; 
+            height: 215px; 
+            background: linear-gradient(180deg, #fffdf0, #ffffff); 
+            animation: floatGlow 3.2s ease-in-out infinite;
+            border-radius: 120px 120px 20px 20px;
+            box-shadow: 0 8px 30px rgba(241,196,15,0.2);
+        }
+        .podium-column.first .podium-badge { background: linear-gradient(135deg, #f1c40f, #f39c12); color: #fff; }
+        .podium-column.second { 
+            height: 185px; 
+            animation: floatGlow 3.2s ease-in-out infinite; 
+            animation-delay: 0.5s;
+            border-color: #bdc3c7;
+        }
+        .podium-column.second .podium-badge { background: linear-gradient(135deg, #bdc3c7, #95a5a6); color: #fff; }
+        .podium-column.third { 
+            height: 175px; 
+            animation: floatGlow 3.2s ease-in-out infinite; 
+            animation-delay: 1.1s;
+            border-color: #e67e22;
+        }
+        .podium-column.third .podium-badge { background: linear-gradient(135deg, #e67e22, #d35400); color: #fff; }
+        .podium-avatar-wrap { position: relative; margin-bottom: 8px; }
+        .podium-avatar { 
+            width: 56px; 
+            height: 56px; 
+            border-radius: 50%; 
+            object-fit: cover; 
+            border: 3px solid #ddd;
+            transition: all 0.3s ease;
+        }
+        .first .podium-avatar { 
+            width: 70px; 
+            height: 70px; 
+            border-color: #f1c40f; 
+            box-shadow: 0 0 20px rgba(241,196,15,0.3);
+            animation: podiumGlow 2s ease-in-out infinite;
+        }
+        .second .podium-avatar { border-color: #bdc3c7; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .third .podium-avatar { border-color: #e67e22; box-shadow: 0 4px 15px rgba(230,126,34,0.2); }
+        .podium-crown { 
+            position: absolute; 
+            top: -20px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            font-size: 1.8rem; 
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.2));
+            animation: crownSpin 3s ease-in-out infinite;
+        }
+        .podium-badge { 
+            position: absolute; 
+            bottom: -8px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            font-size: 0.6rem; 
+            font-weight: 800; 
+            padding: 4px 14px; 
+            border-radius: 20px; 
+            text-transform: uppercase; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
         .podium-name { font-size:0.85rem; font-weight:800; color:var(--text); margin-top:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; width:100%; }
         .podium-earnings { font-size:0.85rem; font-weight:800; color:var(--primary); margin-top:4px; }
 
-        /* ─── এডস হাব ─── */
+        /* ─── এডস ─── */
         .ads-card-container { background:linear-gradient(135deg, #1a1a2e 0%, #2d2b55 100%); border-radius:24px; padding:24px 20px; color:#fff; box-shadow:0 8px 32px rgba(26,26,46,0.35); margin-bottom:20px; position:relative; overflow:hidden; }
         .ads-hub-title-row { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
         .ads-hub-title { font-size:1.15rem; font-weight:800; color:#fff; }
@@ -247,8 +336,9 @@
         .ads-stat-box div:last-child { font-size:1.1rem; font-weight:800; color:#fff; }
         .ads-reward-info-box { background:rgba(108,99,255,0.08); border:1.5px dashed rgba(108,99,255,0.3); border-radius:16px; padding:14px; text-align:center; margin-bottom:20px; }
         .ads-reward-title { font-size:0.95rem; font-weight:700; color:#8B85FF; }
+        .wd-confirm-btn { width:100%; padding:14px; border:none; border-radius:14px; background:var(--gradient-main); color:#fff; font-size:0.95rem; font-weight:800; cursor:pointer; box-shadow:0 4px 16px rgba(108,99,255,0.3); display:flex; align-items:center; justify-content:center; gap:8px; }
 
-        /* ─── উইথড্র পেজ ─── */
+        /* ─── উইথড্র ─── */
         .wd-page-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; padding:8px 2px; }
         .wd-page-title { font-size:1rem; font-weight:800; color:var(--text); }
         .wd-page-title span { color:var(--primary); }
@@ -277,9 +367,8 @@
         .wd-form-group input:focus { border-color:var(--primary); background:#fff; }
         .wd-form-group .hint { font-size:0.7rem; color:var(--text2); margin-top:4px; font-weight:500; }
         #wd-charge-info { font-size:0.78rem; color:var(--text2); margin:-2px 0 14px; display:flex; justify-content:space-between; font-weight:700; padding:10px 12px; background:rgba(108,99,255,0.04); border-radius:10px; border:1px solid rgba(108,99,255,0.1); }
-        .wd-confirm-btn { width:100%; padding:14px; border:none; border-radius:14px; background:var(--gradient-main); color:#fff; font-size:0.95rem; font-weight:800; cursor:pointer; box-shadow:0 4px 16px rgba(108,99,255,0.3); display:flex; align-items:center; justify-content:center; gap:8px; }
 
-        /* ─── টিম পেজ ─── */
+        /* ─── টিম ─── */
         .team-banner { background:var(--gradient-accent); padding:24px 20px; border-radius:24px; color:#fff; margin-bottom:24px; box-shadow:0 8px 28px rgba(255,45,120,0.25); position:relative; overflow:hidden; }
         .team-banner::before { content:''; position:absolute; top:-20px; right:-20px; width:100px; height:100px; background:rgba(255,255,255,0.08); border-radius:50%; }
         .team-banner h2 { font-size:1.5rem; font-weight:800; position:relative; z-index:1; }
@@ -343,19 +432,30 @@
         @keyframes leafFall { 0%{transform:translateY(-50px) translateX(0) rotate(0deg);opacity:0} 10%{opacity:.8} 90%{opacity:.8} 100%{transform:translateY(105vh) translateX(80px) rotate(360deg);opacity:0} }
         .leaf-particle { position:fixed; color:#6C63FF; font-size:1rem; z-index:9999; pointer-events:none; animation:leafFall 14s linear infinite; }
         .atl { background:var(--gradient-main); -webkit-background-clip:text; -webkit-text-fill-color:transparent; display:inline-block; }
+        .file-upload-area {
+            border: 2px dashed rgba(108,99,255,0.2);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: rgba(108,99,255,0.03);
+        }
+        .file-upload-area:hover { border-color: var(--primary); background: rgba(108,99,255,0.05); }
+        .file-upload-area .file-name { font-size: 0.75rem; color: var(--text2); margin-top: 4px; }
     </style>
 </head>
 <body>
 
 <!-- টোস্ট -->
 <div class="toast-notif" id="toast-bar">
-    <i class="fas fa-circle-check"></i> <span>রেফার লিংক কপি হয়েছে! ✅</span>
+    <i class="fas fa-circle-check"></i> <span id="toast-msg">সফল!</span>
 </div>
 
 <!-- লোডার -->
 <div id="loader">
     <div class="loader-icon">💰</div>
-    <div class="loader-title">TaskEarn</div>
+    <div class="loader-title">AMAR INCONE</div>
     <div class="loader-sub">Loading your workspace...</div>
     <div class="progress-bar"><div class="progress-fill" id="pf"></div></div>
 </div>
@@ -363,7 +463,7 @@
 <!-- ভেরিফিকেশন পেজ -->
 <div id="cvs">
     <div class="cv-header">
-        <div class="cv-logo"><div class="cv-logo-box">💰</div><strong>TaskEarn</strong></div>
+        <div class="cv-logo"><div class="cv-logo-box">💰</div><strong>AMAR INCOME</strong></div>
         <button class="cv-burger"><i class="fas fa-bars"></i></button>
     </div>
     <div class="cv-body">
@@ -383,14 +483,14 @@
                 <div class="cv-channel-icon"><i class="fab fa-telegram-plane"></i></div>
                 <div class="cv-channel-text"><strong id="cvn1">Official Channel 1</strong><span>Free to join</span></div>
             </div>
-            <button class="cv-join-btn"><i class="fas fa-plus"></i> JOIN</button>
+            <button class="cv-join-btn" id="cv-join-1"><i class="fas fa-plus"></i> JOIN</button>
         </a>
         <a id="cvb2" class="cv-channel-row" href="#" target="_blank">
             <div class="cv-channel-info">
                 <div class="cv-channel-icon"><i class="fab fa-telegram-plane"></i></div>
                 <div class="cv-channel-text"><strong id="cvn2">Official Channel 2</strong><span>Free to join</span></div>
             </div>
-            <button class="cv-join-btn"><i class="fas fa-plus"></i> JOIN</button>
+            <button class="cv-join-btn" id="cv-join-2"><i class="fas fa-plus"></i> JOIN</button>
         </a>
         <div class="cv-how-box">
             <div class="cv-how-title"><i class="fas fa-route"></i> Step-by-step process</div>
@@ -577,7 +677,7 @@
         <!-- WITHDRAW -->
         <div id="withdraw-pg" class="pg" style="padding:15px;">
             <div class="wd-page-header">
-                <div class="wd-page-title">TaskEarn <span>BOT</span></div>
+                <div class="wd-page-title">AMAR INCOME <span>BOT</span></div>
                 <button onclick="nav('acc-pg')" class="wd-history-btn"><i class="fas fa-list-check"></i> History</button>
             </div>
             <div class="wd-balance-card">
@@ -737,7 +837,7 @@
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
-    // ─── FIREBASE CONFIG ───
+    // ─── FIREBASE ───
     const firebaseConfig = {
         apiKey: "AIzaSyC9LnWZ75opeSGZwHONaHlSLsDXqppn0P8",
         authDomain: "amartask-caf53.firebaseapp.com",
@@ -754,9 +854,9 @@
     const tgUser = tg?.initDataUnsafe?.user || { id: 0, first_name: 'User' };
     const userId = String(tgUser.id);
 
-    // ─── গ্লোবাল ভেরিয়েবল ───
-    let userData = { balance: 0, referrals: 0, first_name: 'User', last_name: '', username: '', photo_url: '' };
-    let configData = { referralBonus: 5, withdrawMethods: [{name:'bKash',min_amount:50,charge_percent:5}], banners: [], requiredChannels: { channel1Url: '', channel2Url: '' } };
+    // ─── গ্লোবাল ───
+    let userData = { balance: 0, referrals: 0, first_name: 'User', last_name: '', username: '', photo_url: '', referredBy: null };
+    let configData = { referralBonus: 5, withdrawMethods: [{name:'bKash',min_amount:50,charge_percent:5}], banners: [], requiredChannels: { channel1Url: '', channel2Url: '' }, adLimit: 20, adReward: 0.50 };
     let selMth = '';
     let curSlide = 0, slTimer = null;
     let adConfig = { watched: 0, limit: 20, reward: 0.50 };
@@ -766,6 +866,14 @@
     const popup = document.getElementById('popup');
     const showP = html => { document.getElementById('pb').innerHTML = html; popup.style.display = 'flex'; };
     window.closePopup = () => popup.style.display = 'none';
+    
+    function showToast(msg) {
+        const toast = document.getElementById('toast-bar');
+        document.getElementById('toast-msg').textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+    
     function copyToClipboard(text) {
         const input = document.createElement('input');
         input.setAttribute('value', text);
@@ -774,21 +882,15 @@
         input.setSelectionRange(0, 99999);
         try { document.execCommand('copy'); document.body.removeChild(input); return true; } catch(e) { document.body.removeChild(input); return false; }
     }
-    function showToast(msg) {
-        const toast = document.getElementById('toast-bar');
-        if (toast) { toast.classList.add('show'); toast.querySelector('span').textContent = msg; setTimeout(() => toast.classList.remove('show'), 2500); }
-    }
 
-    // ─── ফায়ারবেস অপারেশন ───
+    // ─── ফায়ারবেস ───
     function getUserRef() { return db.ref('users/' + userId); }
     function getConfigRef() { return db.ref('config'); }
 
     function loadUserData() {
         return new Promise((resolve) => {
             getUserRef().once('value').then(snap => {
-                if (snap.exists()) {
-                    userData = snap.val();
-                }
+                if (snap.exists()) { userData = snap.val(); }
                 resolve(userData);
             }).catch(() => resolve(userData));
         });
@@ -797,9 +899,7 @@
     function loadConfigData() {
         return new Promise((resolve) => {
             getConfigRef().once('value').then(snap => {
-                if (snap.exists()) {
-                    configData = snap.val();
-                }
+                if (snap.exists()) { configData = snap.val(); }
                 resolve(configData);
             }).catch(() => resolve(configData));
         });
@@ -807,6 +907,24 @@
 
     function saveUserData(data) {
         return getUserRef().update(data);
+    }
+
+    // ─── রেফারেল ফিক্স ───
+    async function handleReferral(refUserId) {
+        if (!refUserId || refUserId === userId) return;
+        try {
+            const refSnap = await db.ref('users/' + refUserId).once('value');
+            const refUser = refSnap.val();
+            if (refUser) {
+                const newRefs = parseInt(refUser.referrals || 0) + 1;
+                await db.ref('users/' + refUserId).update({ referrals: newRefs });
+                // রেফার বোনাস
+                const bonus = parseFloat(configData.referralBonus || 5);
+                const newBalance = parseFloat(refUser.balance || 0) + bonus;
+                await db.ref('users/' + refUserId).update({ balance: newBalance });
+                showToast('রেফারেল বোনাস পেয়েছেন! ৳' + bonus.toFixed(2));
+            }
+        } catch(e) { console.error('Referral error:', e); }
     }
 
     // ─── UI আপডেট ───
@@ -840,7 +958,7 @@
     }
 
     function updateRef() {
-        const bot = configData.botUsername || 'TaskEarnBot';
+        const bot = configData.botUsername || 'AMAR INCOMEBot';
         const lnk = 'https://t.me/' + bot + '?startapp=' + userId;
         const el = document.getElementById('rfl');
         if (el) el.value = lnk;
@@ -848,7 +966,7 @@
         if (tel) tel.textContent = lnk;
     }
 
-    // ─── রিসেন্ট মেম্বার ───
+    // ─── রিসেন্ট ───
     async function loadRecentMembers() {
         const container = document.getElementById('recent-members-box');
         if (!container) return;
@@ -875,7 +993,7 @@
         }
     }
 
-    // ─── টিম ডিটেইলস ───
+    // ─── টিম ───
     async function loadTeamDetails() {
         try {
             const snap = await db.ref('users').orderByChild('referredBy').equalTo(userId).once('value');
@@ -889,7 +1007,6 @@
             document.getElementById('tc-inactive').textContent = inactive;
             document.getElementById('team-members-badge').textContent = total + ' জন';
 
-            // আপলাইন
             const uplineBox = document.getElementById('upline-box');
             if (userData.referredBy) {
                 try {
@@ -913,7 +1030,6 @@
                 uplineBox.innerHTML = `<p style="text-align:center;color:var(--text2);padding:12px;font-size:0.85rem;">কোনো আপলাইন নেই (Direct Join)</p>`;
             }
 
-            // টিম মেম্বার লিস্ট
             const teamList = document.getElementById('team-members-list');
             if (members.length > 0) {
                 teamList.innerHTML = members.map(m => `
@@ -931,7 +1047,7 @@
         } catch(e) { console.error('Team load error:', e); }
     }
 
-    // ─── মাইক্রো জবস ───
+    // ─── মাইক্রো জবস (সহ স্ক্রিনশট) ───
     async function loadMicroJobs() {
         const c = document.getElementById('mjc');
         if (!c) return;
@@ -942,7 +1058,6 @@
             snap.forEach(child => { jobs.push({ id: child.key, ...child.val() }); });
             if (!jobs.length) { c.innerHTML = '<p style="text-align:center;color:var(--text2);padding:20px">বর্তমানে কোনো মাইক্রো জব নেই।</p>'; return; }
             
-            // প্রতিটি জবের জন্য ইউজার স্ট্যাটাস চেক
             const jobStatuses = await Promise.all(jobs.map(async (j) => {
                 const statusSnap = await db.ref('task_submissions/' + userId + '/' + j.id).once('value');
                 return { job: j, status: statusSnap.exists() ? statusSnap.val().status : null };
@@ -997,12 +1112,23 @@
         if (card) card.classList.toggle('open');
     };
 
+    // ─── ওপেন এমজে (স্ক্রিনশট সহ) ───
     window.openMJ = (id, title, desc, link, reward) => {
         showP(`
         <div style="padding:20px;">
             <div class="pph"><span class="ppt">💰 ${title}</span><button class="ppc" onclick="closePopup()">×</button></div>
-            <label style="display:block;font-weight:800;font-size:0.78rem;color:var(--text2);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px;">Proof Note</label>
-            <textarea id="mpt" rows="3" placeholder="ইউজার নেম দিন..." style="width:100%;height:80px;padding:12px;border-radius:12px;border:1.5px solid rgba(108,99,255,0.2);outline:none;font-size:0.88rem;resize:none;"></textarea>
+            <div class="form-group">
+                <label>প্রুফ নোট</label>
+                <textarea id="mpt" rows="2" placeholder="ইউজার নেম বা বিবরণ দিন..." style="width:100%;padding:10px;border-radius:12px;border:1.5px solid rgba(108,99,255,0.2);outline:none;font-size:0.85rem;resize:none;"></textarea>
+            </div>
+            <div class="form-group">
+                <label>স্ক্রিনশট আপলোড করুন</label>
+                <div class="file-upload-area" onclick="document.getElementById('proof_file').click()">
+                    <i class="fas fa-cloud-upload-alt" style="font-size:1.5rem;color:var(--primary);"></i>
+                    <div class="file-name" id="file-name-display">ক্লিক করে স্ক্রিনশট সিলেক্ট করুন</div>
+                </div>
+                <input type="file" id="proof_file" accept="image/*" style="display:none;" onchange="updateFileName(this)">
+            </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px;">
                 <button style="background:rgba(0,0,0,0.05);color:#555;border:none;padding:12px;border-radius:12px;font-weight:700;cursor:pointer;" onclick="closePopup()">Cancel</button>
                 <button style="background:var(--gradient-main);color:#fff;border:none;padding:12px;border-radius:12px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(108,99,255,0.3);" onclick="submitMJ('${id}','${title.replace(/'/g,"\\'")}',${reward})">Submit</button>
@@ -1010,27 +1136,52 @@
         </div>`);
     };
 
+    window.updateFileName = (input) => {
+        const display = document.getElementById('file-name-display');
+        if (input.files && input.files[0]) {
+            display.textContent = input.files[0].name;
+        } else {
+            display.textContent = 'ক্লিক করে স্ক্রিনশট সিলেক্ট করুন';
+        }
+    };
+
+    // ─── সাবমিট এমজে (স্ক্রিনশট সহ) ───
     window.submitMJ = async (jid, jtitle, reward) => {
         const proof = document.getElementById('mpt')?.value;
-        if (!proof?.trim()) { tg.showAlert('প্রুফ বক্সে বিবরণ দিন!'); return; }
+        const fileInput = document.getElementById('proof_file');
+        if (!proof?.trim() && !fileInput?.files?.length) {
+            tg.showAlert('প্রুফ নোট দিন অথবা স্ক্রিনশট আপলোড করুন!');
+            return;
+        }
         showP(`<div style="padding:40px;text-align:center;"><div class="atl" style="font-size:1.1rem;"><i class="fas fa-spinner fa-spin"></i> প্রুফ জমা হচ্ছে...</div></div>`);
         try {
-            await db.ref('task_submissions/' + userId + '/' + jid).set({
+            const submissionData = {
                 jobId: jid,
                 jobTitle: jtitle,
-                proofText: proof,
+                proofText: proof || '',
                 reward: reward,
                 status: 'pending',
                 submittedAt: Date.now()
-            });
-            // ইউজার ব্যালেন্স আপডেট হবে অ্যাডমিন এপ্রুভের পর
+            };
+            
+            // স্ক্রিনশট ফাইল থাকলে Base64 এ কনভার্ট করে সংরক্ষণ
+            if (fileInput && fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                const fileData = await new Promise((resolve) => {
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.readAsDataURL(fileInput.files[0]);
+                });
+                submissionData.screenshot = fileData;
+            }
+            
+            await db.ref('task_submissions/' + userId + '/' + jid).set(submissionData);
             closePopup();
             showP(`<div class="ppb"><div class="pph"><span class="ppt atl">Micro Job</span><button class="ppc" onclick="closePopup()">×</button></div><i class="fas fa-check-circle ppi" style="color:var(--primary)"></i><h3 class="ppb2 atl">প্রুফ জমা হয়েছে!</h3><p class="pps">অ্যাডমিন এপ্রুভ করলে টাকা যোগ হবে।</p><button class="ppa" onclick="closePopup()">ঠিক আছে</button></div>`);
             loadMicroJobs();
             loadMyTaskHistory();
         } catch(e) {
             closePopup();
-            tg.showAlert('নেটওয়ার্ক ত্রুটি!');
+            tg.showAlert('নেটওয়ার্ক ত্রুটি বা ফাইল খুব বড়!');
         }
     };
 
@@ -1047,7 +1198,6 @@
                 container.innerHTML = '<p style="text-align:center;color:var(--text2);padding:30px">বর্তমানে কোনো টেলিগ্রাম টাস্ক উপলব্ধ নেই!</p>';
                 return;
             }
-            // ইউজারের কমপ্লিটেড টাস্ক চেক
             const completedSnap = await db.ref('task_submissions/' + userId).once('value');
             const completedTasks = completedSnap.exists() ? completedSnap.val() : {};
             
@@ -1086,7 +1236,6 @@
                 const taskSnap = await db.ref('telegram_tasks/' + taskId).once('value');
                 const task = taskSnap.val();
                 if (!task) { closePopup(); tg.showAlert('টাস্ক পাওয়া যায়নি!'); return; }
-                // ইউজারকে রিওয়ার্ড দিন
                 const newBalance = parseFloat(userData.balance || 0) + parseFloat(task.reward || 0);
                 await saveUserData({ balance: newBalance });
                 await db.ref('task_submissions/' + userId + '/' + taskId).set({
@@ -1129,12 +1278,10 @@
                 container.innerHTML = '<p style="text-align:center;color:var(--text2);padding:30px">কোনো মাইলস্টোন লক্ষ্য সেট করা নেই!</p>';
                 return;
             }
-            // ইউজারের রেফারেল কাউন্ট
             const refSnap = await db.ref('users').orderByChild('referredBy').equalTo(userId).once('value');
             let userRefs = 0;
             refSnap.forEach(() => userRefs++);
 
-            // ক্লেইম করা মাইলস্টোন
             const claimedSnap = await db.ref('claimed_milestones/' + userId).once('value');
             const claimed = claimedSnap.exists() ? claimedSnap.val() : {};
 
@@ -1229,14 +1376,18 @@
     async function loadAdStats() {
         try {
             const snap = await db.ref('ad_stats/' + userId).once('value');
+            const adLimit = parseInt(configData.adLimit || 20);
+            const adReward = parseFloat(configData.adReward || 0.50);
             if (snap.exists()) {
                 const data = snap.val();
                 adConfig.watched = data.watched || 0;
-                adConfig.limit = data.limit || 20;
-                adConfig.reward = data.reward || 0.50;
+                adConfig.limit = adLimit;
+                adConfig.reward = adReward;
             } else {
-                await db.ref('ad_stats/' + userId).set({ watched: 0, limit: 20, reward: 0.50 });
-                adConfig.watched = 0; adConfig.limit = 20; adConfig.reward = 0.50;
+                await db.ref('ad_stats/' + userId).set({ watched: 0 });
+                adConfig.watched = 0;
+                adConfig.limit = adLimit;
+                adConfig.reward = adReward;
             }
             const remaining = Math.max(0, adConfig.limit - adConfig.watched);
             const percent = Math.min(100, Math.round((adConfig.watched / adConfig.limit) * 100));
@@ -1249,37 +1400,47 @@
         } catch(e) { console.error('Ad stats error:', e); }
     }
 
-    window.triggerAdVideo = async () => {
+    // ─── এড ভিডিও ট্রিগার ───
+    window.triggerAdVideo = () => {
         if (adConfig.watched >= adConfig.limit) {
             tg.showAlert('আজকের এড দেখার লিমিট শেষ হয়েছে! আগামীকাল আবার চেষ্টা করুন।');
             return;
         }
-        // সিমুলেটেড এড ভিউ
-        showP(`<div style="padding:40px;text-align:center;"><div class="atl" style="font-size:1.1rem;"><i class="fas fa-spinner fa-spin"></i> বিজ্ঞাপন দেখানো হচ্ছে...</div></div>`);
-        setTimeout(async () => {
-            try {
-                const newWatched = adConfig.watched + 1;
-                const newBalance = parseFloat(userData.balance || 0) + adConfig.reward;
-                await db.ref('ad_stats/' + userId).update({ watched: newWatched });
-                await saveUserData({ balance: newBalance });
-                userData.balance = newBalance;
-                adConfig.watched = newWatched;
+        const fnName = 'show_11187400';
+        if (typeof window[fnName] === 'function') {
+            showP(`<div style="padding:40px;text-align:center;"><div class="atl" style="font-size:1.1rem;"><i class="fas fa-spinner fa-spin"></i> এড লোড হচ্ছে...</div></div>`);
+            window[fnName]().then(async (success) => {
                 closePopup();
-                updateUI();
-                loadAdStats();
-                showP(`
-                    <div style="padding:22px 18px; text-align:center;">
-                        <div style="width:52px; height:52px; background:#ecfdf5; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 12px; border:2px solid #a7f3d0;"><i class="fas fa-check-circle" style="color:#10b981; font-size:1.8rem;"></i></div>
-                        <h4 style="font-size:0.95rem; font-weight:800; color:#0f2219; margin-bottom:6px;">৳${adConfig.reward.toFixed(2)} যোগ হয়েছে!</h4>
-                        <p style="font-size:0.78rem; color:#64748b; line-height:1.4; margin-bottom:16px;">বিজ্ঞাপন দেখার পুরস্কার ওয়ালেটে যোগ করা হয়েছে।</p>
-                        <button onclick="closePopup()" style="width:100%; padding:10px; border:none; border-radius:10px; background:var(--gradient-main); color:#fff; font-weight:700; font-size:0.82rem; cursor:pointer; box-shadow:0 4px 12px rgba(108,99,255,0.25);">ধন্যবাদ</button>
-                    </div>
-                `);
-            } catch(e) {
+                showP(`<div style="padding:40px;text-align:center;"><div class="atl" style="font-size:1.1rem;"><i class="fas fa-spinner fa-spin"></i> রিওয়ার্ড যোগ হচ্ছে...</div></div>`);
+                try {
+                    const newWatched = adConfig.watched + 1;
+                    const newBalance = parseFloat(userData.balance || 0) + adConfig.reward;
+                    await db.ref('ad_stats/' + userId).update({ watched: newWatched });
+                    await saveUserData({ balance: newBalance });
+                    userData.balance = newBalance;
+                    adConfig.watched = newWatched;
+                    closePopup();
+                    updateUI();
+                    loadAdStats();
+                    showP(`
+                        <div style="padding:22px 18px; text-align:center;">
+                            <div style="width:52px; height:52px; background:#ecfdf5; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 12px; border:2px solid #a7f3d0;"><i class="fas fa-check-circle" style="color:#10b981; font-size:1.8rem;"></i></div>
+                            <h4 style="font-size:0.95rem; font-weight:800; color:#0f2219; margin-bottom:6px;">৳${adConfig.reward.toFixed(2)} যোগ হয়েছে!</h4>
+                            <p style="font-size:0.78rem; color:#64748b; line-height:1.4; margin-bottom:16px;">বিজ্ঞাপন দেখার পুরস্কার ওয়ালেটে যোগ করা হয়েছে।</p>
+                            <button onclick="closePopup()" style="width:100%; padding:10px; border:none; border-radius:10px; background:var(--gradient-main); color:#fff; font-weight:700; font-size:0.82rem; cursor:pointer; box-shadow:0 4px 12px rgba(108,99,255,0.25);">ধন্যবাদ</button>
+                        </div>
+                    `);
+                } catch(e) {
+                    closePopup();
+                    tg.showAlert('পুরস্কার যোগ করতে সমস্যা হয়েছে!');
+                }
+            }).catch((err) => {
                 closePopup();
-                tg.showAlert('পুরস্কার যোগ করতে সমস্যা হয়েছে!');
-            }
-        }, 3000);
+                tg.showAlert('বিজ্ঞাপনটি লোড হতে পারেনি। অনুগ্রহ করে আবার চেষ্টা করুন।');
+            });
+        } else {
+            tg.showAlert('বিজ্ঞাপন SDK লোড হয়নি!');
+        }
     };
 
     // ─── লিডারবোর্ড ───
@@ -1288,7 +1449,7 @@
             const snap = await db.ref('users').orderByChild('balance').limitToLast(10).once('value');
             const leaders = [];
             snap.forEach(child => { leaders.push(child.val()); });
-            leaders.reverse(); // highest first
+            leaders.reverse();
 
             const p1 = document.getElementById('podium-1');
             const p2 = document.getElementById('podium-2');
@@ -1533,26 +1694,79 @@
         else window.open(shareUrl, '_blank');
     };
 
-    // ─── ভেরিফিকেশন ───
+    // ─── ভেরিফিকেশন (রিয়েল চেক) ───
+    async function checkChannelMembership() {
+        try {
+            const config = await db.ref('config/requiredChannels').once('value');
+            const channels = config.val() || {};
+            let joinedCount = 0;
+            let bothJoined = true;
+            
+            // চ্যানেল ১ চেক
+            if (channels.channel1Url) {
+                // সিমুলেটেড চেক - আসলে টেলিগ্রাম API দিয়ে চেক করতে হবে
+                // এখানে আমরা ইউজারের চ্যানেল জয়েন স্টেটাস ডাটাবেজে সংরক্ষণ করব
+                const statusSnap = await db.ref('channel_joins/' + userId + '/channel1').once('value');
+                const joined = statusSnap.val() === true;
+                if (joined) joinedCount++;
+                bothJoined = bothJoined && joined;
+                document.getElementById('cv-join-1').textContent = joined ? '✓ JOINED' : 'JOIN';
+                document.getElementById('cv-join-1').className = 'cv-join-btn' + (joined ? ' joined' : '');
+            }
+            
+            // চ্যানেল ২ চেক
+            if (channels.channel2Url) {
+                const statusSnap = await db.ref('channel_joins/' + userId + '/channel2').once('value');
+                const joined = statusSnap.val() === true;
+                if (joined) joinedCount++;
+                bothJoined = bothJoined && joined;
+                document.getElementById('cv-join-2').textContent = joined ? '✓ JOINED' : 'JOIN';
+                document.getElementById('cv-join-2').className = 'cv-join-btn' + (joined ? ' joined' : '');
+            }
+            
+            document.getElementById('joined-count').textContent = joinedCount + ' / 2 joined';
+            return bothJoined;
+        } catch(e) {
+            console.error('Channel check error:', e);
+            return false;
+        }
+    }
+
     window.verifyChannels = async () => {
         const btn = document.querySelector('.cv-verify-btn');
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> যাচাই করা হচ্ছে...';
-        // সিমুলেটেড ভেরিফিকেশন
-        setTimeout(() => {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-circle-check"></i> Verify Membership Now';
-            // চ্যানেল জয়েন চেক - সিম্পল ভেরিফিকেশন
+        
+        // রিয়েল চেক
+        const allJoined = await checkChannelMembership();
+        
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-circle-check"></i> Verify Membership Now';
+        
+        if (allJoined) {
             document.getElementById('cvs').style.display = 'none';
             document.getElementById('app').style.display = 'block';
-            // ওয়েলকাম মেসেজ
             if (configData.welcomeMessage) {
                 showP(`<div class="ppb"><div class="pph"><span class="ppt atl">স্বাগতম!</span><button class="ppc" onclick="closePopup()">×</button></div><p class="pps atl" style="font-size:1.05rem">${configData.welcomeMessage}</p><button class="ppa" onclick="closePopup()">চালিয়ে যান</button></div>`);
             }
-        }, 1500);
+        } else {
+            showP(`<div class="ppb"><div class="pph"><span class="ppt atl">চ্যানেল ভেরিফিকেশন</span></div><i class="fas fa-triangle-exclamation ppi" style="color:var(--pink)"></i><h3 class="ppb2 atl">আপনি এখনো জয়েন করেননি!</h3><p class="pps">অ্যাপটি ব্যবহার করতে অফিশিয়াল টেলিগ্রাম চ্যানেলে জয়েন করা বাধ্যতামূলক।</p><button class="ppa" style="background:var(--gradient-accent);" onclick="closePopup()">ঠিক আছে, জয়েন করছি</button></div>`);
+        }
     };
 
-    // ─── লিফ পার্টিকেল ───
+    // ─── চ্যানেল জয়েন ট্র্যাক ───
+    document.querySelectorAll('.cv-join-btn').forEach((btn, index) => {
+        btn.addEventListener('click', function(e) {
+            const channel = index === 0 ? 'channel1' : 'channel2';
+            // ইউজার জয়েন করার পর ট্র্যাক
+            setTimeout(() => {
+                db.ref('channel_joins/' + userId + '/' + channel).set(true);
+                checkChannelMembership();
+            }, 2000);
+        });
+    });
+
+    // ─── লিফ ───
     function createLeafParticle() {
         const leaf = document.createElement('div');
         leaf.className = 'leaf-particle';
@@ -1574,13 +1788,16 @@
         tg.expand();
         setP(10);
         
-        // লোড ডেটা
+        // স্টার্ট প্যারামিটার থেকে রেফারেল আইডি নিন
+        const startParam = tg?.initDataUnsafe?.start_param;
+        const refId = startParam && startParam !== userId ? startParam : null;
+        
         await loadUserData();
         setP(40);
         await loadConfigData();
-        setP(80);
+        setP(60);
 
-        // নতুন ইউজার হলে সেভ
+        // নতুন ইউজার
         if (!userData.telegram_id) {
             userData.telegram_id = userId;
             userData.first_name = tgUser.first_name || 'User';
@@ -1590,25 +1807,49 @@
             userData.balance = 0;
             userData.referrals = 0;
             userData.joinedAt = Date.now();
+            
+            // রেফারেল সংরক্ষণ
+            if (refId) {
+                userData.referredBy = refId;
+                await handleReferral(refId);
+            }
+            
             await saveUserData(userData);
+        } else if (refId && !userData.referredBy) {
+            // পুরানো ইউজার কিন্তু রেফারেল নেই
+            userData.referredBy = refId;
+            await saveUserData({ referredBy: refId });
+            await handleReferral(refId);
         }
 
+        setP(80);
+        
+        // চ্যানেল চেক
+        const channels = configData.requiredChannels || {};
+        if (channels.channel1Url && channels.channel1Url.trim() !== '') {
+            document.getElementById('cvb1').href = channels.channel1Url;
+            if (channels.channel1Name) document.getElementById('cvn1').textContent = channels.channel1Name;
+        }
+        if (channels.channel2Url && channels.channel2Url.trim() !== '') {
+            document.getElementById('cvb2').href = channels.channel2Url;
+            if (channels.channel2Name) document.getElementById('cvn2').textContent = channels.channel2Name;
+        }
+
+        // ভেরিফিকেশন চেক
+        const isVerified = await checkChannelMembership();
         setP(100);
         document.getElementById('loader').style.display = 'none';
 
-        // ভেরিফিকেশন চেক - সিম্পল, সবসময় পাস
-        document.getElementById('cvs').style.display = 'none';
-        document.getElementById('app').style.display = 'block';
-
-        // চ্যানেল তথ্য আপডেট
-        const ch = configData.requiredChannels || {};
-        if (ch.channel1Url && ch.channel1Url.trim() !== '') {
-            document.getElementById('cvb1').href = ch.channel1Url;
-            if (ch.channel1Name) document.getElementById('cvn1').textContent = ch.channel1Name;
-        }
-        if (ch.channel2Url && ch.channel2Url.trim() !== '') {
-            document.getElementById('cvb2').href = ch.channel2Url;
-            if (ch.channel2Name) document.getElementById('cvn2').textContent = ch.channel2Name;
+        if (isVerified) {
+            document.getElementById('cvs').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+            if (configData.welcomeMessage && !localStorage.getItem('welcomed_' + userId)) {
+                localStorage.setItem('welcomed_' + userId, '1');
+                showP(`<div class="ppb"><div class="pph"><span class="ppt atl">স্বাগতম!</span><button class="ppc" onclick="closePopup()">×</button></div><p class="pps atl" style="font-size:1.05rem">${configData.welcomeMessage}</p><button class="ppa" onclick="closePopup()">চালিয়ে যান</button></div>`);
+            }
+        } else {
+            document.getElementById('cvs').style.display = 'flex';
+            document.getElementById('app').style.display = 'none';
         }
 
         updateUI();
