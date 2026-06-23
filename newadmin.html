@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>⚡ AMAR TASK ADMIN ⚡</title>
+    <title>⚡ AMAR INCOME Admin ⚡</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -21,6 +21,7 @@
             --gradient-main: linear-gradient(135deg, #6C63FF 0%, #3F3D9E 100%);
             --gradient-accent: linear-gradient(135deg, #FF6584 0%, #FF2D55 100%);
             --gradient-gold: linear-gradient(135deg, #f1c40f 0%, #f39c12 100%);
+            --gradient-green: linear-gradient(135deg, #00c26f 0%, #00e887 100%);
             --bg: #f5f7ff;
             --card-bg: rgba(255,255,255,0.95);
             --card-border: rgba(108,99,255,0.10);
@@ -34,7 +35,7 @@
             --pink: #FF6584;
         }
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Plus Jakarta Sans','Hind Siliguri',sans-serif; -webkit-tap-highlight-color:transparent; }
-        body { background: var(--bg); color: var(--text); overflow-x: hidden; min-height: 100vh; padding-bottom: 80px; }
+        body { background: var(--bg); color: var(--text); overflow-x: hidden; min-height: 100vh; padding-bottom: 20px; }
         
         /* ─── লোডার ─── */
         #loader { position:fixed; top:0; left:0; width:100%; height:100%; background:linear-gradient(160deg,#f5f7ff 0%,#eef0fa 50%,#f5f7ff 100%); z-index:15000; display:flex; flex-direction:column; justify-content:center; align-items:center; }
@@ -103,7 +104,7 @@
         .stat-box .num { font-size: 1.5rem; font-weight: 800; color: var(--primary); }
         .stat-box .label { font-size: 0.65rem; color: var(--text2); text-transform: uppercase; font-weight: 700; margin-top: 4px; }
 
-        /* ─── ফর্ম এলিমেন্ট ─── */
+        /* ─── ফর্ম ─── */
         .form-group { margin-bottom: 14px; }
         .form-group label { display: block; font-weight: 700; font-size: 0.75rem; color: var(--text2); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.4px; }
         .form-group input, .form-group textarea, .form-group select {
@@ -140,7 +141,7 @@
         }
         .btn:active { transform: scale(0.97); }
         .btn-primary { background: var(--gradient-main); color: #fff; box-shadow: 0 4px 12px rgba(108,99,255,0.25); }
-        .btn-success { background: linear-gradient(135deg, #00c26f, #00e887); color: #fff; box-shadow: 0 4px 12px rgba(0,194,111,0.25); }
+        .btn-success { background: var(--gradient-green); color: #fff; box-shadow: 0 4px 12px rgba(0,194,111,0.25); }
         .btn-danger { background: var(--gradient-accent); color: #fff; box-shadow: 0 4px 12px rgba(255,45,120,0.25); }
         .btn-gold { background: var(--gradient-gold); color: #fff; box-shadow: 0 4px 12px rgba(241,196,15,0.3); }
         .btn-outline { background: transparent; border: 1.5px solid var(--primary); color: var(--primary); }
@@ -148,7 +149,7 @@
         .btn-block { width: 100%; justify-content: center; }
         .btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
-        /* ─── লিস্ট আইটেম ─── */
+        /* ─── লিস্ট ─── */
         .list-item {
             display: flex;
             justify-content: space-between;
@@ -176,62 +177,34 @@
         .status-approved { background: #d1fae5; color: #059669; }
         .status-rejected { background: #fde8e8; color: #dc2626; }
 
-        /* ─── নেভিগেশন বাটন (Nav Btn) ─── */
-        .nav-buttons {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 8px;
-            margin-bottom: 20px;
-            background: var(--card-bg);
-            padding: 10px 12px;
-            border-radius: var(--radius);
-            box-shadow: var(--card-shadow);
-            border: 1px solid var(--card-border);
-        }
-        .nav-btn {
+        /* ─── ট্যাব ─── */
+        .tabs {
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 10px 4px;
-            border: none;
+            gap: 6px;
+            background: var(--bg);
             border-radius: var(--radius-sm);
-            background: transparent;
-            color: var(--text2);
+            padding: 4px;
+            margin-bottom: 18px;
+            overflow-x: auto;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 10px 12px;
+            border: none;
+            border-radius: 10px;
             font-weight: 700;
-            font-size: 0.6rem;
+            font-size: 0.78rem;
+            color: var(--text2);
+            background: transparent;
             cursor: pointer;
-            transition: all 0.3s ease;
-            gap: 4px;
-            text-align: center;
-            line-height: 1.2;
+            transition: all 0.2s;
+            white-space: nowrap;
         }
-        .nav-btn i {
-            font-size: 1.2rem;
-            transition: all 0.3s ease;
-        }
-        .nav-btn:hover {
-            background: rgba(108,99,255,0.05);
-            color: var(--primary);
-        }
-        .nav-btn.active {
+        .tab-btn.active {
             background: var(--gradient-main);
             color: #fff;
-            box-shadow: 0 4px 12px rgba(108,99,255,0.25);
+            box-shadow: 0 4px 12px rgba(108,99,255,0.2);
         }
-        .nav-btn.active i {
-            color: #fff;
-        }
-        .nav-btn .nav-label {
-            font-size: 0.55rem;
-            font-weight: 700;
-            letter-spacing: 0.3px;
-        }
-
-        /* ─── ট্যাব কন্টেন্ট ─── */
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
 
         /* ─── টোস্ট ─── */
         .toast-notif {
@@ -300,7 +273,7 @@
             border: 1px solid var(--card-border);
         }
 
-        /* ─── অ্যাডমিন লেভেল বক্স ─── */
+        /* ─── অ্যাডমিন লেভেল ─── */
         .admin-level-box {
             background: var(--gradient-gold);
             border-radius: var(--radius-sm);
@@ -315,14 +288,30 @@
         .admin-level-box .level-title { font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; }
         .admin-level-box .level-badge { background: rgba(255,255,255,0.2); padding: 4px 16px; border-radius: 20px; font-weight: 800; font-size: 0.8rem; }
 
+        /* ─── গিফট কোড জেনারেট ─── */
+        .gift-gen-box {
+            background: linear-gradient(135deg, #1a1a2e 0%, #2d2b55 100%);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            color: #fff;
+            margin-bottom: 16px;
+        }
+        .gift-gen-box .gift-title { font-size: 0.9rem; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .gift-gen-box .gift-title i { color: #FFD700; }
+        .gift-gen-box .gift-input-group { display: flex; gap: 8px; flex-wrap: wrap; }
+        .gift-gen-box .gift-input-group input { flex: 1; min-width: 100px; padding: 10px 14px; border-radius: 10px; border: none; outline: none; font-size: 0.9rem; background: rgba(255,255,255,0.1); color: #fff; }
+        .gift-gen-box .gift-input-group input::placeholder { color: rgba(255,255,255,0.4); }
+        .gift-gen-box .gift-input-group .btn { background: var(--gradient-gold); color: #fff; border: none; }
+        .gift-gen-box .gift-code-display { background: rgba(255,255,255,0.05); border-radius: 10px; padding: 10px; margin-top: 10px; font-size: 0.8rem; text-align: center; border: 1px dashed rgba(255,215,0,0.3); }
+        .gift-gen-box .gift-code-display .code { font-size: 1.1rem; font-weight: 800; color: #FFD700; letter-spacing: 2px; }
+
         /* ─── রেসপন্সিভ ─── */
         @media (max-width: 480px) {
             .form-row { grid-template-columns: 1fr; }
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
             .admin-header h1 { font-size: 1rem; }
-            .nav-buttons { grid-template-columns: repeat(5, 1fr); gap: 4px; padding: 8px 6px; }
-            .nav-btn { padding: 8px 2px; font-size: 0.55rem; }
-            .nav-btn i { font-size: 1rem; }
+            .tabs { flex-wrap: nowrap; }
+            .tab-btn { font-size: 0.65rem; padding: 8px 10px; }
         }
     </style>
 </head>
@@ -336,7 +325,7 @@
 <!-- লোডার -->
 <div id="loader">
     <div class="loader-icon">⚡</div>
-    <div class="loader-title">AMAR TASK ADMIN</div>
+    <div class="loader-title">AMAR INCOME Admin</div>
     <div class="loader-sub">Loading dashboard...</div>
     <div class="progress-bar"><div class="progress-fill" id="pf"></div></div>
 </div>
@@ -346,20 +335,16 @@
 
 <!-- অ্যাডমিন হেডার -->
 <header class="admin-header">
-    <h1><i class="fas fa-crown"></i> Admin Panel</h1>
+    <h1><i class="fas fa-crown"></i> AMAR INCOME Admin</h1>
     <span class="badge"><i class="fas fa-user-shield"></i> Super Admin</span>
 </header>
 
 <div class="container">
 
-    <!-- অ্যাডমিন লেভেল বক্স -->
+    <!-- অ্যাডমিন লেভেল -->
     <div class="admin-level-box">
-        <div class="level-title">
-            <i class="fas fa-star"></i> অ্যাডমিন লেভেল
-        </div>
-        <div class="level-badge">
-            <i class="fas fa-crown"></i> প্রিমিয়াম
-        </div>
+        <div class="level-title"><i class="fas fa-star"></i> অ্যাডমিন লেভেল</div>
+        <div class="level-badge"><i class="fas fa-crown"></i> প্রিমিয়াম</div>
     </div>
 
     <!-- পরিসংখ্যান -->
@@ -371,35 +356,22 @@
             <div class="stat-box"><div class="num" id="stat-tasks">0</div><div class="label">মোট টাস্ক</div></div>
             <div class="stat-box"><div class="num" id="stat-withdrawals">0</div><div class="label">পেন্ডিং উইথড্র</div></div>
             <div class="stat-box"><div class="num" id="stat-submissions">0</div><div class="label">পেন্ডিং সাবমিশন</div></div>
+            <div class="stat-box"><div class="num" id="stat-gifts">0</div><div class="label">গিফট কোড</div></div>
         </div>
     </div>
 
-    <!-- নেভিগেশন বাটন -->
-    <div class="nav-buttons" id="navButtons">
-        <button class="nav-btn active" data-tab="submissions">
-            <i class="fas fa-clipboard-list"></i>
-            <span class="nav-label">সাবমিশন</span>
-        </button>
-        <button class="nav-btn" data-tab="withdrawals">
-            <i class="fas fa-money-bill-wave"></i>
-            <span class="nav-label">উইথড্র</span>
-        </button>
-        <button class="nav-btn" data-tab="users">
-            <i class="fas fa-users"></i>
-            <span class="nav-label">ইউজার</span>
-        </button>
-        <button class="nav-btn" data-tab="tasks">
-            <i class="fas fa-tasks"></i>
-            <span class="nav-label">টাস্ক</span>
-        </button>
-        <button class="nav-btn" data-tab="settings">
-            <i class="fas fa-cog"></i>
-            <span class="nav-label">সেটিংস</span>
-        </button>
+    <!-- ট্যাব -->
+    <div class="tabs" id="tab-container">
+        <button class="tab-btn active" data-tab="submissions">📋 সাবমিশন</button>
+        <button class="tab-btn" data-tab="withdrawals">💸 উইথড্র</button>
+        <button class="tab-btn" data-tab="users">👥 ইউজার</button>
+        <button class="tab-btn" data-tab="tasks">📋 টাস্ক</button>
+        <button class="tab-btn" data-tab="gifts">🎁 গিফট</button>
+        <button class="tab-btn" data-tab="settings">⚙️ সেটিংস</button>
     </div>
 
     <!-- সাবমিশন ট্যাব -->
-    <div id="tab-submissions" class="tab-content active">
+    <div id="tab-submissions" class="tab-content">
         <div class="section-card">
             <div class="section-title"><i class="fas fa-clock"></i> পেন্ডিং টাস্ক সাবমিশন</div>
             <div id="submissions-list"><p style="text-align:center;color:var(--text2);padding:20px;">লোড হচ্ছে...</p></div>
@@ -407,7 +379,7 @@
     </div>
 
     <!-- উইথড্র ট্যাব -->
-    <div id="tab-withdrawals" class="tab-content">
+    <div id="tab-withdrawals" class="tab-content" style="display:none;">
         <div class="section-card">
             <div class="section-title"><i class="fas fa-clock"></i> পেন্ডিং উইথড্র অনুরোধ</div>
             <div id="withdrawals-list"><p style="text-align:center;color:var(--text2);padding:20px;">লোড হচ্ছে...</p></div>
@@ -415,7 +387,7 @@
     </div>
 
     <!-- ইউজার ট্যাব -->
-    <div id="tab-users" class="tab-content">
+    <div id="tab-users" class="tab-content" style="display:none;">
         <div class="section-card">
             <div class="section-title"><i class="fas fa-users"></i> সকল ইউজার</div>
             <div id="users-list"><p style="text-align:center;color:var(--text2);padding:20px;">লোড হচ্ছে...</p></div>
@@ -423,7 +395,7 @@
     </div>
 
     <!-- টাস্ক ট্যাব -->
-    <div id="tab-tasks" class="tab-content">
+    <div id="tab-tasks" class="tab-content" style="display:none;">
         <div class="section-card">
             <div class="section-title"><i class="fas fa-plus-circle"></i> নতুন মাইক্রো জব যোগ করুন</div>
             <form id="add-task-form">
@@ -459,8 +431,32 @@
         </div>
     </div>
 
+    <!-- গিফট ট্যাব -->
+    <div id="tab-gifts" class="tab-content" style="display:none;">
+        <div class="section-card">
+            <div class="section-title"><i class="fas fa-gift"></i> গিফট কোড জেনারেট ও ম্যানেজ</div>
+            
+            <div class="gift-gen-box">
+                <div class="gift-title"><i class="fas fa-plus-circle"></i> নতুন গিফট কোড জেনারেট</div>
+                <div class="gift-input-group">
+                    <input type="number" id="gift-reward-input" placeholder="রিওয়ার্ড (৳)" step="0.01">
+                    <input type="text" id="gift-image-input" placeholder="ছবির URL (ঐচ্ছিক)">
+                    <button class="btn" onclick="generateGiftCode()"><i class="fas fa-magic"></i> জেনারেট</button>
+                </div>
+                <div class="gift-code-display" id="gift-code-display" style="display:none;">
+                    <div style="font-size:0.75rem;opacity:0.7;">নতুন গিফট কোড</div>
+                    <div class="code" id="new-gift-code">-----</div>
+                    <button class="btn btn-sm btn-gold" onclick="copyGiftCode()" style="margin-top:8px;"><i class="fas fa-copy"></i> কপি</button>
+                </div>
+            </div>
+            
+            <div class="section-title" style="margin-top:10px;"><i class="fas fa-list"></i> সব গিফট কোড</div>
+            <div id="gifts-list"><p style="text-align:center;color:var(--text2);padding:20px;">লোড হচ্ছে...</p></div>
+        </div>
+    </div>
+
     <!-- সেটিংস ট্যাব -->
-    <div id="tab-settings" class="tab-content">
+    <div id="tab-settings" class="tab-content" style="display:none;">
         <div class="section-card">
             <div class="section-title"><i class="fas fa-sliders-h"></i> কনফিগারেশন</div>
             <form id="settings-form">
@@ -471,6 +467,10 @@
                 <div class="form-group">
                     <label>রেফারেল বোনাস (৳)</label>
                     <input type="number" id="cfg-ref-bonus" step="0.01" placeholder="5">
+                </div>
+                <div class="form-group">
+                    <label>উইথড্র রেফারেল প্রয়োজন</label>
+                    <input type="number" id="cfg-ref-required" placeholder="3">
                 </div>
                 <div class="form-group">
                     <label>স্বাগতম বার্তা</label>
@@ -541,26 +541,33 @@
     }
     window.closePopup = closePopup;
 
-    // ─── নেভিগেশন বাটন ───
-    document.querySelectorAll('.nav-btn').forEach(btn => {
+    function copyToClipboard(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            return navigator.clipboard.writeText(text).then(() => true).catch(() => false);
+        } else {
+            const input = document.createElement('input');
+            input.setAttribute('value', text);
+            document.body.appendChild(input);
+            input.select();
+            input.setSelectionRange(0, 99999);
+            try { document.execCommand('copy'); document.body.removeChild(input); return true; } catch(e) { document.body.removeChild(input); return false; }
+        }
+    }
+
+    // ─── ট্যাব ───
+    document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', function() {
-            // সব নেভ বাটন থেকে active ক্লাস রিমুভ
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
-            
-            // সব ট্যাব কন্টেন্ট লুকান
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            
-            // সংশ্লিষ্ট ট্যাব দেখান
-            const tabId = this.dataset.tab;
-            document.getElementById('tab-' + tabId).classList.add('active');
-            
-            // ডেটা লোড করুন
-            if (tabId === 'submissions') loadSubmissions();
-            if (tabId === 'withdrawals') loadWithdrawals();
-            if (tabId === 'users') loadUsers();
-            if (tabId === 'tasks') loadTasks();
-            if (tabId === 'settings') loadSettings();
+            const tab = this.dataset.tab;
+            document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+            document.getElementById('tab-' + tab).style.display = 'block';
+            if (tab === 'submissions') loadSubmissions();
+            if (tab === 'withdrawals') loadWithdrawals();
+            if (tab === 'users') loadUsers();
+            if (tab === 'tasks') loadTasks();
+            if (tab === 'gifts') loadGifts();
+            if (tab === 'settings') loadSettings();
         });
     });
 
@@ -595,10 +602,16 @@
                 });
             });
             document.getElementById('stat-submissions').textContent = pendingSub;
+
+            // গিফট কোড কাউন্ট
+            const giftSnap = await db.ref('gift_codes').once('value');
+            let totalGifts = 0;
+            giftSnap.forEach(() => totalGifts++);
+            document.getElementById('stat-gifts').textContent = totalGifts;
         } catch(e) { console.error('Stats error:', e); }
     }
 
-    // ─── সাবমিশন (Task Approval) ───
+    // ─── সাবমিশন ───
     async function loadSubmissions() {
         const container = document.getElementById('submissions-list');
         container.innerHTML = '<p style="text-align:center;color:var(--text2);padding:20px;">লোড হচ্ছে...</p>';
@@ -892,6 +905,86 @@
         }).catch(() => showToast('ডিলিট করতে সমস্যা!'));
     };
 
+    // ─── গিফট ───
+    let lastGeneratedCode = '';
+
+    window.generateGiftCode = async () => {
+        const rewardInput = document.getElementById('gift-reward-input');
+        const imageInput = document.getElementById('gift-image-input');
+        const reward = parseFloat(rewardInput.value);
+        if (!reward || reward <= 0) {
+            showToast('সঠিক রিওয়ার্ড দিন!');
+            return;
+        }
+        const code = 'GIFT' + Math.random().toString(36).substring(2, 8).toUpperCase();
+        const image = imageInput.value.trim() || 'https://i.postimg.cc/zfhDR2tf/1782165342751.png';
+        try {
+            await db.ref('gift_codes/' + code).set({
+                reward: reward,
+                image: image,
+                claimedBy: null,
+                claimedAt: null,
+                createdAt: Date.now()
+            });
+            lastGeneratedCode = code;
+            document.getElementById('new-gift-code').textContent = code;
+            document.getElementById('gift-code-display').style.display = 'block';
+            showToast('✅ গিফট কোড জেনারেট হয়েছে!');
+            loadGifts();
+            loadStats();
+            rewardInput.value = '';
+            imageInput.value = '';
+        } catch(e) {
+            showToast('জেনারেট করতে সমস্যা!');
+        }
+    };
+
+    window.copyGiftCode = () => {
+        if (lastGeneratedCode) {
+            copyToClipboard(lastGeneratedCode).then(success => {
+                if (success) showToast('✅ গিফট কোড কপি হয়েছে!');
+                else showToast('কপি করতে সমস্যা!');
+            });
+        }
+    };
+
+    async function loadGifts() {
+        const container = document.getElementById('gifts-list');
+        container.innerHTML = '<p style="text-align:center;color:var(--text2);padding:20px;">লোড হচ্ছে...</p>';
+        try {
+            const snap = await db.ref('gift_codes').once('value');
+            const gifts = [];
+            snap.forEach(child => { gifts.push({ id: child.key, ...child.val() }); });
+            if (!gifts.length) {
+                container.innerHTML = '<p style="text-align:center;color:var(--text2);padding:20px;">কোনো গিফট কোড নেই</p>';
+                return;
+            }
+            container.innerHTML = gifts.map(g => `
+                <div class="list-item">
+                    <div class="info">
+                        <strong>🎁 ${g.id}</strong>
+                        <span>রিওয়ার্ড: ৳${parseFloat(g.reward).toFixed(2)}</span>
+                        ${g.claimedBy ? `<small>✅ দাবি করেছেন: ${g.claimedBy} • ${new Date(g.claimedAt).toLocaleDateString()}</small>` : `<small style="color:var(--green);">⏳ এখনও দাবি করা হয়নি</small>`}
+                    </div>
+                    <div class="actions">
+                        <button class="btn btn-sm btn-danger" onclick="deleteGift('${g.id}')"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        } catch(e) {
+            container.innerHTML = '<p style="text-align:center;color:var(--text2);padding:20px;">লোড করতে সমস্যা</p>';
+        }
+    }
+
+    window.deleteGift = (id) => {
+        if (!confirm('এই গিফট কোড ডিলিট করতে চান?')) return;
+        db.ref('gift_codes/' + id).remove().then(() => {
+            showToast('গিফট কোড ডিলিট হয়েছে!');
+            loadGifts();
+            loadStats();
+        }).catch(() => showToast('ডিলিট করতে সমস্যা!'));
+    };
+
     // ─── সেটিংস ───
     async function loadSettings() {
         try {
@@ -899,6 +992,7 @@
             const cfg = snap.val() || {};
             document.getElementById('cfg-bot').value = cfg.botUsername || '';
             document.getElementById('cfg-ref-bonus').value = cfg.referralBonus || 5;
+            document.getElementById('cfg-ref-required').value = cfg.withdrawRefRequired || 3;
             document.getElementById('cfg-welcome').value = cfg.welcomeMessage || '';
             document.getElementById('cfg-chan1').value = cfg.requiredChannels?.channel1Url || '';
             document.getElementById('cfg-chan2').value = cfg.requiredChannels?.channel2Url || '';
@@ -925,6 +1019,7 @@
             const data = {
                 botUsername: document.getElementById('cfg-bot').value.trim(),
                 referralBonus: parseFloat(document.getElementById('cfg-ref-bonus').value) || 5,
+                withdrawRefRequired: parseInt(document.getElementById('cfg-ref-required').value) || 3,
                 welcomeMessage: document.getElementById('cfg-welcome').value.trim(),
                 requiredChannels: {
                     channel1Url: document.getElementById('cfg-chan1').value.trim(),
@@ -954,6 +1049,7 @@
         setP(70);
         await loadUsers();
         await loadTasks();
+        await loadGifts();
         setP(90);
         await loadSettings();
         setP(100);
